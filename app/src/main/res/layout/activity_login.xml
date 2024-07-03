@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".register.Activity_login"
+    android:background="@color/main_theme">
+
+    <ImageView
+        android:id="@+id/imageView_login_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo_splash_323x101"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout_login_01"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_login_01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/appCompatButton_login_kakao"
+            android:layout_width="358dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button_login_kakao"
+            android:text="카카오로 간편 로그인" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/appCompatButton_login_naver"
+            android:layout_width="358dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button_login_naver"
+            android:text="카카오로 간편 로그인" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/appCompatButton_login_google"
+            android:layout_width="358dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button_login_google"
+            android:text="카카오로 간편 로그인" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/black"
+                app:layout_constraintBottom_toBottomOf="@id/textView_login_login"
+                app:layout_constraintEnd_toStartOf="@id/textView_login_login"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textView_login_login" />
+
+            <TextView
+                android:id="@+id/textView_login_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그인"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view_02"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/black"
+                app:layout_constraintBottom_toBottomOf="@id/textView_login_login"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textView_login_login"
+                app:layout_constraintTop_toTopOf="@id/textView_login_login" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/black"
+                app:layout_constraintBottom_toBottomOf="@id/textView_login_register"
+                app:layout_constraintEnd_toStartOf="@id/textView_login_register"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textView_login_register" />
+
+            <TextView
+                android:id="@+id/textView_login_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원가입"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view_04"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/black"
+                app:layout_constraintBottom_toBottomOf="@id/textView_login_register"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textView_login_register"
+                app:layout_constraintTop_toTopOf="@id/textView_login_register" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
