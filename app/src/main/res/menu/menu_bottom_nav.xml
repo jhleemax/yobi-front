@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragment_home"
+        android:title="홈"
+        android:icon="@drawable/main_button_home_normal"/>
+    <item
+        android:id="@+id/fragment_recipe"
+        android:title="레시피"
+        android:icon="@drawable/main_button_recipe_normal"/>
+    <item
+        android:id="@+id/fragment_community"
+        android:title="커뮤니티"
+        android:icon="@drawable/main_button_community_normal"/>
+    <item
+        android:id="@+id/fragment_my"
+        android:title="MY"
+        android:icon="@drawable/main_button_my_normal"/>
+</menu>
