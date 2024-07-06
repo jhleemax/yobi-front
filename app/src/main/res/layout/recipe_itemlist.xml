@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="4dp"
+    android:background="@color/white">
+    <ImageView
+        android:id="@+id/imageView_recipe_itemlist"
+        android:layout_width="120dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/imageView_recipe_itemlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/textView_recipe_itemlist_01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="소고기 된장찌개"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout_recipe_itemlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/textView_recipe_itemlist_01"
+            app:layout_constraintStart_toEndOf="@id/imageView_recipe_itemlist">
+            <TextView
+                android:id="@+id/textView_recipe_itemlist_02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="한식"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+<!--            <View-->
+<!--                android:id="@+id/view_recipe_itemlist_01"-->
+<!--                android:layout_width="1dp"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:background="@color/black"-->
+<!--                app:layout_constraintStart_toEndOf="@id/textView_recipe_itemlist_02"-->
+<!--                app:layout_constraintTop_toTopOf="@id/textView_recipe_itemlist_02"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/textView_recipe_itemlist_02"-->
+<!--                android:layout_marginStart="4dp"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/textView_recipe_itemlist_03"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="2인분"-->
+<!--                app:layout_constraintStart_toEndOf="@id/view_recipe_itemlist_01"-->
+<!--                app:layout_constraintTop_toTopOf="@id/view_recipe_itemlist_01"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/view_recipe_itemlist_01"-->
+<!--                android:layout_marginStart="4dp"/>-->
+<!--            <View-->
+<!--                android:id="@+id/view_recipe_itemlist_02"-->
+<!--                android:layout_width="1dp"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:background="@color/black"-->
+<!--                app:layout_constraintStart_toEndOf="@id/textView_recipe_itemlist_03"-->
+<!--                app:layout_constraintTop_toTopOf="@id/textView_recipe_itemlist_03"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/textView_recipe_itemlist_03"-->
+<!--                android:layout_marginStart="4dp"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/textView_recipe_itemlist_04"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="15분 이내"-->
+<!--                app:layout_constraintStart_toEndOf="@id/view_recipe_itemlist_02"-->
+<!--                app:layout_constraintTop_toTopOf="@id/view_recipe_itemlist_02"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/view_recipe_itemlist_02"-->
+<!--                android:layout_marginStart="4dp"/>-->
+<!--            <View-->
+<!--                android:id="@+id/view_recipe_itemlist_03"-->
+<!--                android:layout_width="1dp"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:background="@color/black"-->
+<!--                app:layout_constraintStart_toEndOf="@id/textView_recipe_itemlist_04"-->
+<!--                app:layout_constraintTop_toTopOf="@id/view_recipe_itemlist_02"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/view_recipe_itemlist_02"-->
+<!--                android:layout_marginStart="4dp"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/textView_recipe_itemlist_05"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="중급"-->
+<!--                app:layout_constraintStart_toEndOf="@id/view_recipe_itemlist_03"-->
+<!--                app:layout_constraintTop_toTopOf="@id/view_recipe_itemlist_02"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/view_recipe_itemlist_02"-->
+<!--                android:layout_marginStart="4dp"/>-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/textView_recipe_itemlist_06"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="소고기, 두부, 무, 양파, 된장, 쌈장 등"
+            android:maxLines="1"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

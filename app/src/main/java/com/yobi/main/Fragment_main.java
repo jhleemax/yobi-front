@@ -62,15 +62,15 @@ public class Fragment_main extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        // 권한 요청 함수
+        requestAudioPermission();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        // 권한 요청 함수
-        requestAudioPermission();
 
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
