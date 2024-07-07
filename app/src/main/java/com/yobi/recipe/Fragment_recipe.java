@@ -1,5 +1,6 @@
 package com.yobi.recipe;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -108,6 +109,17 @@ public class Fragment_recipe extends Fragment {
 
                     RecyclerViewAdapter<APIRecipe> apiRecipeRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipesArrayList, getActivity().getApplicationContext());
                     recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
+
+                    // 리사이클러뷰 아이템 클릭 리스너
+                    apiRecipeRecyclerViewAdapter.setOnItemClickListener((view, position) -> {
+                        // 아이템 클릭 처리
+                        APIRecipe clickedRecipe = apiRecipesArrayList.get(position);
+                        // 예를 들어, 클릭된 레시피 상세 정보 액티비티 시작
+                        Intent intent = new Intent(getContext(), Activity_recipe_detail.class);
+                        intent.putExtra("clickedRecipe", clickedRecipe);
+                        intent.putExtra("separator", "api");
+                        startActivity(intent);
+                    });
                 }
             }
 
