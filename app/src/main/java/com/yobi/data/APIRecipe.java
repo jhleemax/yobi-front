@@ -2,7 +2,10 @@ package com.yobi.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class APIRecipe {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class APIRecipe implements Serializable {
     @SerializedName("att_FILE_NO_MAIN")
     private String att_FILE_NO_MAIN;
     @SerializedName("info_NA")
@@ -23,7 +26,6 @@ public class APIRecipe {
     private String rcpnm;
     @SerializedName("rcp_WAY2")
     private String rcp_WAY2;
-    //
     @SerializedName("att_FILE_NO_MK")
     private String att_FILE_NO_MK;
     @SerializedName("manual01")
@@ -553,5 +555,52 @@ public class APIRecipe {
 
     public void setManual16(String manual16) {
         this.manual16 = manual16;
+    }
+
+    public ArrayList<RecipeOrderDetail> getRecipeOrderDetails() {
+        ArrayList<RecipeOrderDetail> recipeOrderDetails = new ArrayList<>();
+
+        if(this.manual01 != null && !(this.manual01.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG01, this.manual01));
+        if(this.manual02 != null && !(this.manual02.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG02, this.manual02));
+        if(this.manual03 != null && !(this.manual03.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG03, this.manual03));
+        if(this.manual04 != null && !(this.manual04.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG04, this.manual04));
+        if(this.manual05 != null && !(this.manual05.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG05, this.manual05));
+        if(this.manual06 != null && !(this.manual06.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG06, this.manual06));
+        if(this.manual07 != null && !(this.manual07.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG07, this.manual07));
+        if(this.manual08 != null && !(this.manual08.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG08, this.manual08));
+        if(this.manual09 != null && !(this.manual09.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG09, this.manual09));
+        if(this.manual10 != null && !(this.manual10.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG10, this.manual10));
+        if(this.manual11 != null && !(this.manual11.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG11, this.manual11));
+        if(this.manual12 != null && !(this.manual12.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG12, this.manual12));
+        if(this.manual13 != null && !(this.manual13.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG13, this.manual13));
+        if(this.manual14 != null && !(this.manual14.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG14, this.manual14));
+        if(this.manual15 != null && !(this.manual15.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG15, this.manual15));
+        if(this.manual16 != null && !(this.manual16.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG16, this.manual16));
+        if(this.manual17 != null && !(this.manual17.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG17, this.manual17));
+        if(this.manual18 != null && !(this.manual18.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG18, this.manual18));
+        if(this.manual19 != null && !(this.manual19.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG19, this.manual19));
+        if(this.manual20 != null && !(this.manual20.isEmpty()))
+            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG20, this.manual20));
+
+        return recipeOrderDetails;
     }
 }

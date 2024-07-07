@@ -15,8 +15,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Yobi"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".recipe.Activity_recipe_detail_order"
+            android:exported="false" />
+        <activity
+            android:name=".recipe.Activity_recipe_detail"
+            android:exported="false" />
         <activity
             android:name=".main.Activity_main"
             android:exported="false" />
