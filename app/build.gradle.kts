@@ -42,6 +42,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.glide)
+    implementation(libs.lombok) // 롬복
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

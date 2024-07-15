@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="4dp"
     android:background="@color/white">
     <ImageView
         android:id="@+id/imageView_recipe_itemlist"
@@ -113,5 +112,11 @@
             android:text="소고기, 두부, 무, 양파, 된장, 쌈장 등"
             android:maxLines="1"/>
     </LinearLayout>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/gray"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

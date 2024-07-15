@@ -1,6 +1,7 @@
 package com.yobi.register;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,9 @@ public class Activity_login_normal extends AppCompatActivity {
     EditText et_email, et_pwd;
     Button btn_login, btn_back;
 
+    // 데이터
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class Activity_login_normal extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
 
         et_email = findViewById(R.id.editText_login_normal_email);
         et_pwd = findViewById(R.id.editText_login_normal_pwd);
@@ -148,6 +153,9 @@ public class Activity_login_normal extends AppCompatActivity {
             Toast.makeText(Activity_login_normal.this, result, Toast.LENGTH_SHORT).show();
             if (result.equals("로그인 성공")) { // 서버에서 "로그인 성공" 문자열을 반환하는 경우
                 Intent intent = new Intent(Activity_login_normal.this, Activity_main.class); // 다음 화면 액티비티로 변경
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("userId", et_email.getText().toString());
+                editor.commit();
                 startActivity(intent);
                 finish();
             }

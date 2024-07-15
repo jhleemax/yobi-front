@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category">
+        <item>한식</item>
+        <item>중식</item>
+        <item>양식</item>
+        <item>일식</item>
+        <item>기타</item>
+    </string-array>
+    <string-array name="unit">
+        <item>개</item>
+        <item>T</item>
+        <item>t</item>
+        <item>컵</item>
+        <item>종이컵</item>
+        <item>oz</item>
+        <item>갤런</item>
+        <item>꼬집</item>
+        <item>줌</item>
+        <item>주먹</item>
+        <item>토막</item>
+        <item>쪽</item>
+        <item>근</item>
+        <item>봉지</item>
+    </string-array>
+</resources>
