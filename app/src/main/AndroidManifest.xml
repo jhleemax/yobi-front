@@ -18,6 +18,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".recipe.Activity_recipe_write"
+            android:exported="false" />
+        <activity
             android:name=".recipe.Activity_recipe_detail_order"
             android:exported="false" />
         <activity
