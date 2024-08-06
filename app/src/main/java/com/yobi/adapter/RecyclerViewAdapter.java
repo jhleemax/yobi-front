@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.yobi.R;
 import com.yobi.data.APIRecipe;
+import com.yobi.data.RecipeOrderDetail;
 import com.yobi.main.Activity_main;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        // api 레시피 조회용
         private TextView recipe_title;
         private TextView recipe_genre;
         //private final TextView recipe_amount;
@@ -44,6 +46,15 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         //private final TextView recipe_difficulty;
         private TextView recipe_ingredient;
         private ImageView imageView;
+
+        // api 레시피 순서용
+        private ImageView order_img;
+        private TextView order_description;
+        private ImageView order_img_sub01;
+        private TextView order_description_sub01;
+        private ImageView order_img_sub02;
+        private TextView order_description_sub02;
+
         private final RecyclerViewAdapter<T> adapter; // 상위 클래스 참조
 
         @SuppressLint("WrongViewCast")
@@ -75,6 +86,14 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                             }
                         }
                     });
+                } else if(adapter.dataSet.get(0) instanceof RecipeOrderDetail) {
+                    // 뷰 초기화
+                    order_img = view.findViewById(R.id.imageView_recipe_detail_order_itemlist);
+                    order_description = view.findViewById(R.id.textView_recipe_detail_order_itemlist_description);
+                    order_img_sub01 = view.findViewById(R.id.imageView_recipe_detail_order_itemlist_sub_description_01);
+                    order_description_sub01 = view.findViewById(R.id.textView_recipe_detail_order_itemlist_sub_description_01);
+                    order_img_sub02 = view.findViewById(R.id.imageView_recipe_detail_order_itemlist_sub_description_02);
+                    order_description_sub02 = view.findViewById(R.id.textView_recipe_detail_order_itemlist_sub_description_02);
                 }
             }
         }
@@ -90,6 +109,17 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                 Glide.with(context)
                      .load(((APIRecipe) item).getAtt_FILE_NO_MAIN())
                      .into(imageView);
+            } else if(item instanceof RecipeOrderDetail) {
+                // sub 설명, 이미지 비활성화
+                order_img_sub01.setVisibility(View.GONE);
+                order_description_sub01.setVisibility(View.GONE);
+                order_img_sub02.setVisibility(View.GONE);
+                order_description_sub02.setVisibility(View.GONE);
+
+                order_description.setText(((RecipeOrderDetail) item).getMainDescription());
+                Glide.with(context)
+                     .load(((RecipeOrderDetail) item).getImg())
+                     .into(order_img);
             }
         }
     }
@@ -102,7 +132,12 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_itemlist, parent, false);
+        View view = null;
+        if(dataSet.get(0) instanceof APIRecipe)
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_itemlist, parent, false);
+        else if(dataSet.get(0) instanceof RecipeOrderDetail)
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
+
         return new ViewHolder(view, listener, this);
     }
 
