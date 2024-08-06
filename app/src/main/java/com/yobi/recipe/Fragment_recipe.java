@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
 import com.yobi.adapter.RecyclerViewAdapter;
 import com.yobi.data.APIRecipe;
@@ -43,6 +44,7 @@ public class Fragment_recipe extends Fragment {
     List<APIRecipe> apiRecipesList;
     // 컴포넌트
     RecyclerView recyclerView;
+    FloatingActionButton floatingActionButton;
 
 
     // TODO: Rename and change types of parameters
@@ -88,6 +90,7 @@ public class Fragment_recipe extends Fragment {
 
         // 초기화
         recyclerView = v.findViewById(R.id.recyclerView_recipe);
+        floatingActionButton = v.findViewById(R.id.floatingActionButton_recipe);
 
         // 레트로핏 통신
         retrofit = new Retrofit.Builder()
@@ -126,6 +129,15 @@ public class Fragment_recipe extends Fragment {
             @Override
             public void onFailure(Call<List<APIRecipe>> call, Throwable throwable) {
                 Log.e("retrofit_onFailure", throwable.getMessage());
+            }
+        });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Activity_recipe_write.class);
+                intent.putExtra("separator", "w");
+                startActivity(intent);
             }
         });
 
