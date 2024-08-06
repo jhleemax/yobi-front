@@ -21,9 +21,6 @@
             android:name=".my.Activity_option"
             android:exported="false" />
         <activity
-            android:name=".my.Activity_dibs"
-            android:exported="false" />
-        <activity
             android:name=".my.Activity_my_extended"
             android:exported="false" />
         <activity
