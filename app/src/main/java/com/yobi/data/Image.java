@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRecipeImage {
+public class Image {
     String url;
 }

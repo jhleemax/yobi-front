@@ -23,7 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
 import com.yobi.data.APIRecipe;
 import com.yobi.data.RecipeOrderDetail;
-import com.yobi.data.UserRecipeImage;
+import com.yobi.data.Image;
 import com.yobi.data.UserRecipeIngredient;
 import com.yobi.data.UserRecipeOrder;
 
@@ -185,7 +185,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                             }
                         }
                     });
-                } else if(adapter.dataSet.get(0) instanceof UserRecipeImage) {
+                } else if(adapter.dataSet.get(0) instanceof Image) {
                     // 뷰 초기화
                     image = view.findViewById(R.id.imageView_recipe_write_addition);
                     imageDelete = view.findViewById(R.id.floatingActionButton_delete);
@@ -350,11 +350,11 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                 });
 
 
-            } else if(item instanceof UserRecipeImage) {
+            } else if(item instanceof Image) {
                 image.setPadding(0, 0, 0, 0);
 
                 Glide.with(context)
-                     .load(((UserRecipeImage) item).getUrl())
+                     .load(((Image) item).getUrl())
                      .into(image);
             }
         }
@@ -377,7 +377,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_order_itemlist, parent, false);
         else if(dataSet.get(0) instanceof UserRecipeIngredient)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_ingredient_itemlist, parent, false);
-        else if(dataSet.get(0) instanceof UserRecipeImage)
+        else if(dataSet.get(0) instanceof Image)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_image_itemlist, parent, false);
 
         return new ViewHolder(view, listener, textChangeListener, itemSelectedListener,this);
