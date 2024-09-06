@@ -1,14 +1,29 @@
 package com.yobi.community;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
+import com.yobi.data.Community;
+import com.yobi.recipe.Activity_recipe_write;
+import com.yobi.retrofit.RetrofitAPI;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +36,13 @@ public class Fragment_community extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    // API
+    Retrofit retrofit;
+
+    // 컴포넌트
+    RecyclerView recyclerView;
+    FloatingActionButton floatingActionButton;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -61,6 +83,50 @@ public class Fragment_community extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_community, container, false);
+        View v = inflater.inflate(R.layout.fragment_community, container, false);
+
+        // 초기화
+        recyclerView = v.findViewById(R.id.recyclerView_community_01);
+        floatingActionButton = v.findViewById(R.id.floatingActionButton_community);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+        retrofitAPI.getCommunityByTitle("").enqueue(new Callback<List<Community>>() {
+            @Override
+            public void onResponse(Call<List<Community>> call, Response<List<Community>> response) {
+                Log.e("retrofit_onResponse", "Success");
+                List<Community> communities = response.body();
+                if(communities != null) {
+                    for(Community c : communities) {
+                        int i = 0;
+                        Log.e("community" + i, communities.get(i).getTitle());
+                        i++;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Community>> call, Throwable throwable) {
+                Log.e("retrofit_onFailure", throwable.getMessage());
+            }
+        });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Activity_recipe_write.class);
+                intent.putExtra("type", "community");
+                intent.putExtra("separator", "w");
+
+                startActivity(intent);
+            }
+        });
+
+        return v;
     }
 }

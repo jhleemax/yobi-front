@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.glide)
     implementation(libs.lombok) // 롬복
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // 구글 로그인
+    implementation ("com.navercorp.nid:oauth:5.9.1") // 네이버 로그인
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     testImplementation(libs.junit)

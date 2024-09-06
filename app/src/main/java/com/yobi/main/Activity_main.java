@@ -1,6 +1,8 @@
 package com.yobi.main;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
@@ -14,10 +16,33 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.navercorp.nid.NaverIdLoginSDK;
 import com.yobi.R;
 import com.yobi.community.Fragment_community;
+import com.yobi.data.NullOnEmptyConverterFactory;
 import com.yobi.my.Fragment_my;
 import com.yobi.recipe.Fragment_recipe;
+import com.yobi.retrofit.RetrofitAPI;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_main extends AppCompatActivity {
 
@@ -50,6 +75,8 @@ public class Activity_main extends AppCompatActivity {
         fragment_community = new Fragment_community();
         fragment_my = new Fragment_my();
 
+        Intent intent = getIntent();
+
         // 이벤트 리스너
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -69,6 +96,41 @@ public class Activity_main extends AppCompatActivity {
 
 
         setFrag(0); // 메인 화면으로 설정
+
+        /*
+        if(intent.getStringExtra("loginType").equals("naver")) {
+
+            Retrofit retrofitNaver = new Retrofit.Builder()
+                    .baseUrl("https://openapi.naver.com")
+                    .addConverterFactory(new NullOnEmptyConverterFactory())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            RetrofitAPI retrofitAPINaver = retrofitNaver.create(RetrofitAPI.class);
+
+            String header = "Bearer " + NaverIdLoginSDK.INSTANCE.getAccessToken();
+            Log.e("Naver Header", header);
+
+            Map<String, String> headerMap = new HashMap<>();
+            headerMap.put("Authorization", header);
+            headerMap.put("X-Naver-Client-Id", "InT0mn3ckZlsmF7N2TZB");
+            headerMap.put("X-Naver-Client-Secret", "iyFAmsTbT4");
+
+            retrofitAPINaver.callNaverProfile(headerMap).enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                    Log.e("Naver response_code", response.toString());
+                    Log.e("Naver response_code", response.body().toString());
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable throwable) {
+                    Log.e("retrofitNaver_onFailure", throwable.getMessage());
+                }
+            });
+
+        }
+         */
     }
     private void setFrag(int n) {
         fragmentManager = getSupportFragmentManager();
