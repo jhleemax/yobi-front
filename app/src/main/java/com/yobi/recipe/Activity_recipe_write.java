@@ -117,8 +117,9 @@ public class Activity_recipe_write extends AppCompatActivity {
         });
 
         // 레시피 신규 작성일 경우
-        if(getIntent().getStringExtra("separator").equals("w")) {
-            if(getIntent().getStringExtra("type").equals("recipe")) {
+        if ("w".equals(getIntent().getStringExtra("separator"))) {
+            if ("recipe".equals(getIntent().getStringExtra("type"))) {
+
                 // 컴포넌트 비활성화
                 description.setVisibility(View.GONE);
                 textView_description.setVisibility(View.GONE);
@@ -246,11 +247,14 @@ public class Activity_recipe_write extends AppCompatActivity {
                 // 사진 추가 버튼 이벤트 리스너
                 plusImage.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v) {   // 최대 20장
                         if(Images.size() < 20) {
-                            Images.add(new Image(""));
-
-                            imageRecyclerViewAdaptor.notifyItemInserted(Images.size() - 1);
+//                            Images.add(new Image(""));
+//                            imageRecyclerViewAdaptor.notifyItemInserted(Images.size() - 1);
+                            Intent intent = new Intent();
+                            intent.setType("image/*"); // 이미지만 선택 가능
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityResult.launch(intent); // 선택된 사진 결과 처리
                         }
                     }
                 });
@@ -283,14 +287,14 @@ public class Activity_recipe_write extends AppCompatActivity {
                 thumbnail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
 
-                            startActivityResult.launch(intent);
+                        startActivityResult.launch(intent);
                     }
                 });
-            } else if(getIntent().getStringExtra("type").equals("community")) { // 커뮤니티 작성일 경우
+            } else if ("community".equals(getIntent().getStringExtra("type"))) { // 커뮤니티 작성일 경우
                 // 비활성화
                 ingredient.setVisibility(View.GONE);
                 order.setVisibility(View.GONE);
@@ -389,7 +393,7 @@ public class Activity_recipe_write extends AppCompatActivity {
                 });
             }
             // ------------
-        } else if(getIntent().getStringExtra("separator").equals("u")) { // 레시피 수정일 경우
+        } else if ("u".equals(getIntent().getStringExtra("separator"))) { // 레시피 수정일 경우
 
         }
     }
@@ -398,13 +402,17 @@ public class Activity_recipe_write extends AppCompatActivity {
         @Override
         public void onActivityResult(ActivityResult result) {
             if ( result.getResultCode() == RESULT_OK && result.getData() != null) {
+                // 선택된 이미지의 URI 가져오기
                 imageUri = result.getData().getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                     //iv_upload_image.setImageBitmap(bitmap);		//이미지를 띄울 이미지뷰 설정
-                    Images.set(posi, new Image(imageUri.toString()));
-
-                    imageRecyclerViewAdaptor.notifyItemChanged(posi);
+//                    Images.set(posi, new Image(imageUri.toString()));
+//
+//                    imageRecyclerViewAdaptor.notifyItemChanged(posi);
+                    // RecyclerView에 이미지를 추가
+                    Images.add(new Image(imageUri.toString())); // Image 클래스에 맞춰 데이터 추가
+                    imageRecyclerViewAdaptor.notifyItemInserted(Images.size() - 1); // 새 이미지 추가 후 RecyclerView 업데이트
                 }
                 catch (FileNotFoundException e) {
                     e.printStackTrace();
