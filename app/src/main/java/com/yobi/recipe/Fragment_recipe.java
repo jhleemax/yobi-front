@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
 import com.yobi.adapter.RecyclerViewAdapter;
 import com.yobi.data.APIRecipe;
+import com.yobi.data.RecipeResponse;
 import com.yobi.retrofit.RetrofitAPI;
 
 import java.util.ArrayList;
@@ -86,11 +87,19 @@ public class Fragment_recipe extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_recipe, container, false);
 
+
+
         recyclerView = v.findViewById(R.id.recyclerView_recipe);
         floatingActionButton = v.findViewById(R.id.floatingActionButton_recipe);
         recipe_searchview = v.findViewById(R.id.searchView_recipe);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // 어댑터 연결
+        recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
+        if (recyclerView == null) {
+            Log.e("Fragment_recipe", "RecyclerView is null");
+        }
 
         // 초기화
         apiRecipesList = new ArrayList<>();
@@ -105,6 +114,12 @@ public class Fragment_recipe extends Fragment {
                 .build();
 
         retrofitAPI = retrofit.create(RetrofitAPI.class);
+        
+        // 리사이클러뷰 가져오기
+        currentPage = 0;  // 새 검색이 시작될 때 페이지를 0으로 초기화
+        apiRecipesArrayList.clear();  // 기존 데이터를 비움
+        loadRecipes(currentPage);  // 새로운 검색 결과 로드
+        Log.e("lodRecipes", "here is complete");
 
         // SearchView 리스너 설정
         recipe_searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -113,7 +128,8 @@ public class Fragment_recipe extends Fragment {
                 currentQuery = query;
                 currentPage = 0;  // 새 검색이 시작될 때 페이지를 0으로 초기화
                 apiRecipesArrayList.clear();  // 기존 데이터를 비움
-                loadRecipes(currentQuery, currentPage);  // 새로운 검색 결과 로드
+                loadRecipes(currentPage);  // 새로운 검색 결과 로드
+                Log.e("lodRecipes", "까지는 됐는데...?");
                 return true;
             }
 
@@ -130,24 +146,36 @@ public class Fragment_recipe extends Fragment {
             startActivity(intent);
         });
 
+        setupScrollListener(); // 스크롤 리스너 추가
+
         return v;
     }
 
-    private void loadRecipes(String title, int page) {
-        retrofitAPI.getRecipeByTitle(title, page).enqueue(new Callback<APIRecipe>() {
+    private void loadRecipes(int page) {
+        retrofitAPI.getRecipeAll(page).enqueue(new Callback<RecipeResponse>() {
             @Override
-            public void onResponse(Call<APIRecipe> call, Response<APIRecipe> response) {
+            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    apiRecipesArrayList.add(response.body());
-                    apiRecipeRecyclerViewAdapter.notifyDataSetChanged();
+                    Log.d("Retrofit Response", "Response: " + response.body().toString());
+
+                    // UI 스레드에서 RecyclerView 업데이트
+                    getActivity().runOnUiThread(() -> {
+                        List<APIRecipe> recipes = response.body().getContent();  // RecipeResponse의 content 필드에서 레시피 리스트 추출
+                        if (recipes != null) {
+                            apiRecipesArrayList.addAll(recipes);  // 리스트에 데이터 추가
+                            apiRecipeRecyclerViewAdapter.notifyDataSetChanged();  // 어댑터 갱신
+                        } else {
+                            Log.e("Retrofit", "Recipe list is empty.");
+                        }
+                    });
                 } else {
-                    Log.e("Retrofit", "No recipes found.");
+                    Log.e("Retrofit", "No recipes found. Response code: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<APIRecipe> call, Throwable throwable) {
-                Log.e("Retrofit_onFailure", throwable.getMessage());
+            public void onFailure(Call<RecipeResponse> call, Throwable t) {
+                Log.e("Retrofit_onFailure", "Failed to load recipes: " + t.getMessage());
             }
         });
     }
@@ -161,7 +189,7 @@ public class Fragment_recipe extends Fragment {
 
                 if (!recyclerView.canScrollVertically(1)) { // 최하단에 도달했을 때
                     currentPage++;  // 페이지 증가
-                    loadRecipes(currentQuery, currentPage);  // 다음 페이지의 레시피 로드
+                    loadRecipes(currentPage);  // 다음 페이지의 레시피 로드
                 }
             }
         });

@@ -112,14 +112,14 @@ public class Activity_recipe_detail extends AppCompatActivity {
             profileDescription.setText("YOBI 공식 프로필 입니다");
 
             // 레시피 제목
-            textView01.setText(apiRecipe.getRcpnm());
+            textView01.setText(apiRecipe.getTitle());
 
             // 레시피 설명
-            description.setText(apiRecipe.getRcp_NA_TIP());
+//            description.setText(apiRecipe.getRcp_NA_TIP());
 
             // 레시피 사진
             Glide.with(getApplicationContext())
-                  .load(apiRecipe.getAtt_FILE_NO_MAIN())
+                  .load(apiRecipe.getRecipeThumbnail())
                   .into(mainImage);
 
             RecyclerViewAdapter<RecipeOrderDetail> recipeOrderDetailRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipe.getRecipeOrderDetails(), getApplicationContext());

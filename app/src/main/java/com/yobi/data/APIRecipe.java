@@ -1,21 +1,23 @@
 package com.yobi.data;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class APIRecipe implements Serializable {
-
 
     private String title;
     private String userId;
     private String recipeId;
     private String category;
     private String ingredient;
-    private String manuals;
+
+    @SerializedName("recipeThumbnail")
     private String recipeThumbnail;
 
+    @SerializedName("manuals")
+    private List<Manual> manuals;
 
     public String getTitle() {
         return title;
@@ -57,25 +59,24 @@ public class APIRecipe implements Serializable {
         this.ingredient = ingredient;
     }
 
-    public String getManuals() {
-        return manuals;
-    }
-
-    public void setManuals(String manuals) {
-        this.manuals = manuals;
-    }
-
     public String getRecipeThumbnail() {
         return recipeThumbnail;
     }
 
+    public List<Manual> getManuals() {
+        return manuals;
+    }
 
+    public void setManuals(List<Manual> manuals) {
+        this.manuals = manuals;
+    }
+
+    // 필요할 경우 getRecipeOrderDetails 메소드를 다시 작성
     public ArrayList<RecipeOrderDetail> getRecipeOrderDetails() {
         ArrayList<RecipeOrderDetail> recipeOrderDetails = new ArrayList<>();
-
-//        if(this.manual01 != null && !(this.manual01.isEmpty()))
-//            recipeOrderDetails.add(new RecipeOrderDetail(this.manual_IMG01, this.manual01));
-
+        for (Manual manual : manuals) {
+            recipeOrderDetails.add(new RecipeOrderDetail(manual.getImageUrl(), manual.getDescription()));
+        }
         return recipeOrderDetails;
     }
 }

@@ -2,6 +2,7 @@ package com.yobi.retrofit;
 
 import com.yobi.data.APIRecipe;
 import com.yobi.data.Community;
+import com.yobi.data.RecipeResponse;
 import com.yobi.data.User;
 
 import org.json.JSONObject;
@@ -38,6 +39,12 @@ public interface RetrofitAPI {
     // 네이버 로그인 프로필 정보 가져오기
     @GET("/v1/nid/me")
     Call<JSONObject> callNaverProfile(@HeaderMap Map<String, String> headers);
+
+    // 레시피 전체검색
+    @GET("/recipe/all/{page}/10")
+    Call<RecipeResponse> getRecipeAll(
+            @Path("page") int page
+    );
 
     // 레시피 이름으로 검색
     @GET("/recipe/title/{title}/{page}/10")

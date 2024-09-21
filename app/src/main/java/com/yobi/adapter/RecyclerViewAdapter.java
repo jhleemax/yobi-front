@@ -195,26 +195,37 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
 
         public void onBind(T item, int position) {
             if (item instanceof APIRecipe) {
-                // API 레시피 바인딩
-                recipe_title.setText(((APIRecipe) item).getTitle());
-                recipe_genre.setText(((APIRecipe) item).getCategory());
-                recipe_ingredient.setText(((APIRecipe) item).getIngredient());
+                APIRecipe recipe = (APIRecipe) item;
 
-                Glide.with(context)
-                        .load(((APIRecipe) item).getRecipeThumbnail())
-                        .into(imageView);
+                // 레시피 이름 설정
+                recipe_title.setText(recipe.getTitle());
+
+                // 레시피 카테고리 설정
+                recipe_genre.setText(recipe.getCategory());
+
+                // 재료 설정
+                recipe_ingredient.setText(recipe.getIngredient());
+
+                // 이미지 로드 (Glide 사용)
+                if (recipe.getRecipeThumbnail() != null && !recipe.getRecipeThumbnail().isEmpty()) {
+                    Glide.with(context)
+                            .load(recipe.getRecipeThumbnail())
+                            .into(imageView);
+                }
 
             } else if (item instanceof RecipeOrderDetail) {
                 // 레시피 순서 바인딩
-                order_description.setText(((RecipeOrderDetail) item).getMainDescription());
+                RecipeOrderDetail orderDetail = (RecipeOrderDetail) item;
+                order_description.setText(orderDetail.getMainDescription());
                 Glide.with(context)
-                        .load(((RecipeOrderDetail) item).getImg())
+                        .load(orderDetail.getImg())
                         .into(order_img);
 
             } else if (item instanceof UserRecipeOrder) {
                 // 사용자 레시피 순서 바인딩
-                order_content.setText(((UserRecipeOrder) item).getContents());
-                step.setText("STEP " + ((UserRecipeOrder) item).getNum());
+                UserRecipeOrder order = (UserRecipeOrder) item;
+                order_content.setText(order.getContents());
+                step.setText("STEP " + order.getNum());
 
                 order_content.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -233,8 +244,9 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
 
             } else if (item instanceof UserRecipeIngredient) {
                 // 사용자 레시피 재료 바인딩
-                ingredient.setText(((UserRecipeIngredient) item).getIngredient());
-                countE.setText(((UserRecipeIngredient) item).getCount());
+                UserRecipeIngredient ingredientItem = (UserRecipeIngredient) item;
+                ingredient.setText(ingredientItem.getIngredient());
+                countE.setText(ingredientItem.getCount());
 
                 countE.addTextChangedListener(new TextWatcher() {
                     @Override

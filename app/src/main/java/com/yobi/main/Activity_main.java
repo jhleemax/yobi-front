@@ -138,16 +138,16 @@ public class Activity_main extends AppCompatActivity {
 
         switch (n) {
             case 0:
-                fragmentTransaction.replace(R.id.frameLayout_main, fragment_main).commit();
+                fragmentTransaction.replace(R.id.frameLayout_main, fragment_main).commitAllowingStateLoss();
                 break;
             case 1:
-                fragmentTransaction.replace(R.id.frameLayout_main, fragment_recipe).commit();
+                fragmentTransaction.replace(R.id.frameLayout_main, fragment_recipe).commitAllowingStateLoss();
                 break;
             case 2:
-                fragmentTransaction.replace(R.id.frameLayout_main, fragment_community).commit();
+                fragmentTransaction.replace(R.id.frameLayout_main, fragment_community).commitAllowingStateLoss();
                 break;
             case 3:
-                fragmentTransaction.replace(R.id.frameLayout_main, fragment_my).commit();
+                fragmentTransaction.replace(R.id.frameLayout_main, fragment_my).commitAllowingStateLoss();
                 break;
         }
     }
