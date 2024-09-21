@@ -32,6 +32,7 @@ public class Activity_login_normal extends AppCompatActivity {
     // 컴포넌트
     EditText et_email, et_pwd;
     Button btn_login, btn_back;
+    Button btnroot;
 
     // 데이터
     SharedPreferences sharedPreferences;
@@ -53,6 +54,8 @@ public class Activity_login_normal extends AppCompatActivity {
         btn_login = findViewById(R.id.button_login_normal_submit);
         btn_back = findViewById(R.id.button_login_normal_backspace_01);
 
+        btnroot = findViewById(R.id.rootbutton);
+
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +67,15 @@ public class Activity_login_normal extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginUser();
+            }
+        });
+
+        btnroot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Activity_login_normal.this, Activity_main.class); // 다음 화면 액티비티로 변경
+                startActivity(intent);
+                finish();
             }
         });
     }

@@ -22,8 +22,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
 import com.yobi.data.APIRecipe;
-import com.yobi.data.RecipeOrderDetail;
 import com.yobi.data.Image;
+import com.yobi.data.RecipeOrderDetail;
 import com.yobi.data.UserRecipeIngredient;
 import com.yobi.data.UserRecipeOrder;
 
@@ -42,12 +42,12 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         void onItemClick(View view, int position);
     }
 
-    // editText change 이벤트 리스너
+    // EditText change 이벤트 리스너
     public interface OnTextChangeListener {
         void onTextChanged(int position, String text);
     }
 
-    // spinner 아이템 클릭 이벤트 리스너
+    // Spinner 아이템 클릭 이벤트 리스너
     public interface OnItemSelectedListener {
         void onItemSelected(View view, int position);
     }
@@ -66,29 +66,22 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // api 레시피 조회용
+        // API 레시피 조회용
         private TextView recipe_title;
         private TextView recipe_genre;
-        //private final TextView recipe_amount;
-        //private final TextView recipe_time;
-        //private final TextView recipe_difficulty;
         private TextView recipe_ingredient;
         private ImageView imageView;
 
-        // api 레시피 순서용
+        // API 레시피 순서용
         private ImageView order_img;
         private TextView order_description;
-        private ImageView order_img_sub01;
-        private TextView order_description_sub01;
-        private ImageView order_img_sub02;
-        private TextView order_description_sub02;
 
-        // 사용자 레시피 작성, 수정용(레시피 순서)
+        // 사용자 레시피 작성/수정용 (레시피 순서)
         private EditText order_content;
         private TextView step;
         private ImageView remove;
 
-        // 사용자 레시피 작성, 수정용(레시피 재료)
+        // 사용자 레시피 작성/수정용 (레시피 재료)
         private EditText ingredient;
         private EditText countE;
         private TextView plus;
@@ -96,7 +89,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         private TextView delete;
         private Spinner unit;
 
-        // 사용자 레시피 작성, 수정용(레시피 사진)
+        // 사용자 레시피 작성/수정용 (레시피 사진)
         private ImageView image;
         private FloatingActionButton imageDelete;
 
@@ -107,22 +100,18 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
             super(view);
             this.adapter = adapter;
 
-            if(adapter.dataSet.isEmpty()) {
+            if (adapter.dataSet.isEmpty()) {
                 Log.e("ViewHolder", "dataSet is Empty");
                 return;
             } else {
-                if(adapter.dataSet.get(0) instanceof APIRecipe) { // 데이터셋의 타입이 APIRecipe 일 경우
-                    // 뷰 초기화
+                if (adapter.dataSet.get(0) instanceof APIRecipe) {
+                    // API 레시피에 대한 뷰 초기화
                     recipe_title = view.findViewById(R.id.textView_recipe_itemlist_01);
                     recipe_genre = view.findViewById(R.id.textView_recipe_itemlist_02);
-        //          recipe_amount = view.findViewById(R.id.textView_recipe_itemlist_03);
-        //          recipe_time = view.findViewById(R.id.textView_recipe_itemlist_04);
-        //          recipe_difficulty = view.findViewById(R.id.textView_recipe_itemlist_05);
                     recipe_ingredient = view.findViewById(R.id.textView_recipe_itemlist_06);
                     imageView = view.findViewById(R.id.imageView_recipe_itemlist);
 
-
-                    // itemView에 클릭 리스너 부착
+                    // 아이템 클릭 리스너 설정
                     view.setOnClickListener(v -> {
                         if (listener != null) {
                             int position = getAdapterPosition();
@@ -131,31 +120,30 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                             }
                         }
                     });
-                } else if(adapter.dataSet.get(0) instanceof RecipeOrderDetail) {
-                    // 뷰 초기화
+
+                } else if (adapter.dataSet.get(0) instanceof RecipeOrderDetail) {
+                    // 레시피 순서 관련 뷰 초기화
                     order_img = view.findViewById(R.id.imageView_recipe_detail_order_itemlist);
                     order_description = view.findViewById(R.id.textView_recipe_detail_order_itemlist_description);
-                    order_img_sub01 = view.findViewById(R.id.imageView_recipe_detail_order_itemlist_sub_description_01);
-                    order_description_sub01 = view.findViewById(R.id.textView_recipe_detail_order_itemlist_sub_description_01);
-                    order_img_sub02 = view.findViewById(R.id.imageView_recipe_detail_order_itemlist_sub_description_02);
-                    order_description_sub02 = view.findViewById(R.id.textView_recipe_detail_order_itemlist_sub_description_02);
-                } else if(adapter.dataSet.get(0) instanceof UserRecipeOrder) {
-                    // 뷰 초기화
+
+                } else if (adapter.dataSet.get(0) instanceof UserRecipeOrder) {
+                    // 사용자 레시피 순서 관련 뷰 초기화
                     order_content = view.findViewById(R.id.editText_recipe_write_order_itemlist);
                     step = view.findViewById(R.id.textView_recipe_write_order_itemlist);
                     remove = view.findViewById(R.id.imageView_recipe_write_order_itemlist_substract);
 
                     // - 버튼에 클릭 리스너 부착
                     remove.setOnClickListener(v -> {
-                        if(listener != null) {
+                        if (listener != null) {
                             int position = getAdapterPosition();
                             if (position != RecyclerView.NO_POSITION) {
                                 listener.onItemClick(v, position);
                             }
                         }
                     });
-                } else if(adapter.dataSet.get(0) instanceof UserRecipeIngredient) {
-                    // 뷰 초기화
+
+                } else if (adapter.dataSet.get(0) instanceof UserRecipeIngredient) {
+                    // 레시피 재료 관련 뷰 초기화
                     ingredient = view.findViewById(R.id.editText_recipe_write_ingredient_itemlist_01);
                     countE = view.findViewById(R.id.editText_recipe_write_ingredient_itemlist_02);
                     plus = view.findViewById(R.id.textView_recipe_write_ingredient_itemlist_01);
@@ -163,19 +151,11 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                     delete = view.findViewById(R.id.textView_recipe_write_ingredient_itemlist_03);
                     unit = view.findViewById(R.id.spinner_unit);
 
-                    // - 버튼에 클릭 리스너 부착
-                    plus.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            countE.setText(Double.toString(Double.parseDouble(countE.getText().toString())+1.0));
-                        }
-                    });
-                    minus.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(Double.parseDouble(countE.getText().toString())-1.0 >= 0)
-                                countE.setText(Double.toString(Double.parseDouble(countE.getText().toString())-1.0));
-                        }
+                    // 재료 수량 관리 버튼
+                    plus.setOnClickListener(v -> countE.setText(Double.toString(Double.parseDouble(countE.getText().toString()) + 1.0)));
+                    minus.setOnClickListener(v -> {
+                        if (Double.parseDouble(countE.getText().toString()) - 1.0 >= 0)
+                            countE.setText(Double.toString(Double.parseDouble(countE.getText().toString()) - 1.0));
                     });
                     delete.setOnClickListener(v -> {
                         if (listener != null) {
@@ -185,12 +165,12 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                             }
                         }
                     });
-                } else if(adapter.dataSet.get(0) instanceof Image) {
-                    // 뷰 초기화
+                } else if (adapter.dataSet.get(0) instanceof Image) {
+                    // 이미지 관련 뷰 초기화
                     image = view.findViewById(R.id.imageView_recipe_write_addition);
                     imageDelete = view.findViewById(R.id.floatingActionButton_delete);
 
-                    // image 버튼에 클릭 리스너 부착
+                    // 이미지 클릭 리스너 설정
                     image.setOnClickListener(v -> {
                         if (listener != null) {
                             int position = getAdapterPosition();
@@ -200,7 +180,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                         }
                     });
 
-                    // delete 버튼에 클릭 리스너 부착
+                    // 삭제 버튼 클릭 리스너 설정
                     imageDelete.setOnClickListener(v -> {
                         if (listener != null) {
                             int position = getAdapterPosition();
@@ -212,150 +192,64 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
                 }
             }
         }
+
         public void onBind(T item, int position) {
-            if(item instanceof APIRecipe) { // api 레시피일 경우
-                recipe_title.setText(((APIRecipe) item).getRcpnm());
-                recipe_genre.setText(((APIRecipe) item).getRcp_PAT2());
-//                recipe_amount.setText(item.getAmount());
-//                recipe_time.setText(item.getTime());
-//                recipe_difficulty.setText(item.getDifficulty());
-                recipe_ingredient.setText(((APIRecipe) item).getRcp_PARTS_DTLS());
+            if (item instanceof APIRecipe) {
+                // API 레시피 바인딩
+                recipe_title.setText(((APIRecipe) item).getTitle());
+                recipe_genre.setText(((APIRecipe) item).getCategory());
+                recipe_ingredient.setText(((APIRecipe) item).getIngredient());
 
                 Glide.with(context)
-                     .load(((APIRecipe) item).getAtt_FILE_NO_MAIN())
-                     .into(imageView);
-            } else if(item instanceof RecipeOrderDetail) {
-                // sub 설명, 이미지 비활성화
-                order_img_sub01.setVisibility(View.GONE);
-                order_description_sub01.setVisibility(View.GONE);
-                order_img_sub02.setVisibility(View.GONE);
-                order_description_sub02.setVisibility(View.GONE);
+                        .load(((APIRecipe) item).getRecipeThumbnail())
+                        .into(imageView);
 
+            } else if (item instanceof RecipeOrderDetail) {
+                // 레시피 순서 바인딩
                 order_description.setText(((RecipeOrderDetail) item).getMainDescription());
                 Glide.with(context)
-                     .load(((RecipeOrderDetail) item).getImg())
-                     .into(order_img);
-            } else if(item instanceof UserRecipeOrder) {
-                if(((UserRecipeOrder) item).getContents().isEmpty()) {
-                    order_content.setText(((UserRecipeOrder) item).getNum() + "번째 순서를 작성해주세요.");
-                } else {
-                    order_content.setText(((UserRecipeOrder) item).getContents());
-                }
-                step.setText("STEP" + ((UserRecipeOrder) item).getNum());
+                        .load(((RecipeOrderDetail) item).getImg())
+                        .into(order_img);
+
+            } else if (item instanceof UserRecipeOrder) {
+                // 사용자 레시피 순서 바인딩
+                order_content.setText(((UserRecipeOrder) item).getContents());
+                step.setText("STEP " + ((UserRecipeOrder) item).getNum());
 
                 order_content.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if(textChangeListener != null) {
+                        if (textChangeListener != null) {
                             textChangeListener.onTextChanged(position, s.toString());
                         }
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
+                    public void afterTextChanged(Editable s) {}
                 });
-            } else if(item instanceof UserRecipeIngredient) {
-                // Spinner 초기화
-                String[] array = context.getResources().getStringArray(R.array.unit);
-                ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_unit_item, array);
-                adapter.setDropDownViewResource(R.layout.spinner_unit_item);
-                unit.setAdapter(adapter);
 
+            } else if (item instanceof UserRecipeIngredient) {
+                // 사용자 레시피 재료 바인딩
                 ingredient.setText(((UserRecipeIngredient) item).getIngredient());
-                if(((UserRecipeIngredient) item).getCount().isEmpty())
-                    countE.setText("0");
-                else
-                    countE.setText(((UserRecipeIngredient) item).getCount());
-
-                ingredient.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if(textChangeListener != null)
-                            textChangeListener.onTextChanged(position, s.toString());
-//                            textChangeListener.onTextChanged(position, s.toString(), ingredient);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
-                });
-                /*
-                unit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if(itemSelectedListener != null)
-                            itemSelectedListener.onItemSelected(view, position);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-                 */
+                countE.setText(((UserRecipeIngredient) item).getCount());
 
                 countE.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if(textChangeListener != null)
+                        if (textChangeListener != null) {
                             textChangeListener.onTextChanged(position, s.toString());
-//                            textChangeListener.onTextChanged(position, s.toString(), countE);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
-                });
-
-                // - 버튼에 클릭 리스너 부착
-                plus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        countE.setText(Double.toString(Double.parseDouble(countE.getText().toString())+1.0));
-                    }
-                });
-                minus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(Double.parseDouble(countE.getText().toString())-1.0 >= 0)
-                            countE.setText(Double.toString(Double.parseDouble(countE.getText().toString())-1.0));
-                    }
-                });
-                delete.setOnClickListener(v -> {
-                    if (listener != null) {
-//                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemClick(v, position);
                         }
                     }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
                 });
-
-
-            } else if(item instanceof Image) {
-                image.setPadding(0, 0, 0, 0);
-
-                Glide.with(context)
-                     .load(((Image) item).getUrl())
-                     .into(image);
             }
         }
     }
@@ -369,18 +263,18 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = null;
-        if(dataSet.get(0) instanceof APIRecipe)
+        if (dataSet.get(0) instanceof APIRecipe)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_itemlist, parent, false);
-        else if(dataSet.get(0) instanceof RecipeOrderDetail)
+        else if (dataSet.get(0) instanceof RecipeOrderDetail)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
-        else if(dataSet.get(0) instanceof UserRecipeOrder)
+        else if (dataSet.get(0) instanceof UserRecipeOrder)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_order_itemlist, parent, false);
-        else if(dataSet.get(0) instanceof UserRecipeIngredient)
+        else if (dataSet.get(0) instanceof UserRecipeIngredient)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_ingredient_itemlist, parent, false);
-        else if(dataSet.get(0) instanceof Image)
+        else if (dataSet.get(0) instanceof Image)
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_image_itemlist, parent, false);
 
-        return new ViewHolder(view, listener, textChangeListener, itemSelectedListener,this);
+        return new ViewHolder(view, listener, textChangeListener, itemSelectedListener, this);
     }
 
     @Override

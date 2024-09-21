@@ -5,11 +5,13 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yobi.R;
@@ -33,21 +35,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class Fragment_recipe extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // Retrofit
     Retrofit retrofit;
-    // 데이터 변수
+    RetrofitAPI retrofitAPI;
     List<APIRecipe> apiRecipesList;
+    ArrayList<APIRecipe> apiRecipesArrayList;
+
     // 컴포넌트
     RecyclerView recyclerView;
+    RecyclerViewAdapter<APIRecipe> apiRecipeRecyclerViewAdapter;
     FloatingActionButton floatingActionButton;
+    SearchView recipe_searchview;
 
+    // 페이지 관리 변수
+    private int currentPage = 0;
 
-    // TODO: Rename and change types of parameters
+    // 검색어 변수
+    private String currentQuery = "";
+
     private String mParam1;
     private String mParam2;
 
@@ -55,15 +63,6 @@ public class Fragment_recipe extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Fragment_recipe.
-     */
-    // TODO: Rename and change types and number of parameters
     public static Fragment_recipe newInstance(String param1, String param2) {
         Fragment_recipe fragment = new Fragment_recipe();
         Bundle args = new Bundle();
@@ -85,62 +84,86 @@ public class Fragment_recipe extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recipe, container, false);
 
-        // 초기화
         recyclerView = v.findViewById(R.id.recyclerView_recipe);
         floatingActionButton = v.findViewById(R.id.floatingActionButton_recipe);
+        recipe_searchview = v.findViewById(R.id.searchView_recipe);
 
-        // 레트로핏 통신
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // 초기화
+        apiRecipesList = new ArrayList<>();
+        apiRecipesArrayList = new ArrayList<>();
+        apiRecipeRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipesArrayList, getActivity().getApplicationContext());
+        recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
+
+        // Retrofit 초기화
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080")
+                .baseUrl("http://ec2-13-125-91-233.ap-northeast-2.compute.amazonaws.com:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+        retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-        retrofitAPI.getAPIRecipes().enqueue(new Callback<List<APIRecipe>>() {
+        // SearchView 리스너 설정
+        recipe_searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onResponse(Call<List<APIRecipe>> call, Response<List<APIRecipe>> response) {
-                if(response.isSuccessful()) {
-                    apiRecipesList = response.body();
-                }
-
-                if(apiRecipesList != null && !apiRecipesList.isEmpty()) {
-                    ArrayList<APIRecipe> apiRecipesArrayList = new ArrayList<>(apiRecipesList);
-
-                    RecyclerViewAdapter<APIRecipe> apiRecipeRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipesArrayList, getActivity().getApplicationContext());
-                    recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
-
-                    // 리사이클러뷰 아이템 클릭 리스너
-                    apiRecipeRecyclerViewAdapter.setOnItemClickListener((view, position) -> {
-                        // 아이템 클릭 처리
-                        APIRecipe clickedRecipe = apiRecipesArrayList.get(position);
-                        // 예를 들어, 클릭된 레시피 상세 정보 액티비티 시작
-                        Intent intent = new Intent(getContext(), Activity_recipe_detail.class);
-                        intent.putExtra("clickedRecipe", clickedRecipe);
-                        intent.putExtra("separator", "api");
-                        startActivity(intent);
-                    });
-                }
+            public boolean onQueryTextSubmit(String query) {
+                currentQuery = query;
+                currentPage = 0;  // 새 검색이 시작될 때 페이지를 0으로 초기화
+                apiRecipesArrayList.clear();  // 기존 데이터를 비움
+                loadRecipes(currentQuery, currentPage);  // 새로운 검색 결과 로드
+                return true;
             }
 
             @Override
-            public void onFailure(Call<List<APIRecipe>> call, Throwable throwable) {
-                Log.e("retrofit_onFailure", throwable.getMessage());
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), Activity_recipe_write.class);
-                intent.putExtra("separator", "w");
-                startActivity(intent);
-            }
+        // 플로팅 액션 버튼 클릭 시 작성 액티비티로 이동
+        floatingActionButton.setOnClickListener(v1 -> {
+            Intent intent = new Intent(getContext(), Activity_recipe_write.class);
+            intent.putExtra("separator", "w");
+            startActivity(intent);
         });
 
         return v;
+    }
+
+    private void loadRecipes(String title, int page) {
+        retrofitAPI.getRecipeByTitle(title, page).enqueue(new Callback<APIRecipe>() {
+            @Override
+            public void onResponse(Call<APIRecipe> call, Response<APIRecipe> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    apiRecipesArrayList.add(response.body());
+                    apiRecipeRecyclerViewAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e("Retrofit", "No recipes found.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIRecipe> call, Throwable throwable) {
+                Log.e("Retrofit_onFailure", throwable.getMessage());
+            }
+        });
+    }
+
+    // RecyclerView가 스크롤될 때 추가 로딩을 위한 메서드
+    private void setupScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (!recyclerView.canScrollVertically(1)) { // 최하단에 도달했을 때
+                    currentPage++;  // 페이지 증가
+                    loadRecipes(currentQuery, currentPage);  // 다음 페이지의 레시피 로드
+                }
+            }
+        });
     }
 }
