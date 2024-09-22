@@ -48,8 +48,14 @@ public interface RetrofitAPI {
 
     // 레시피 이름으로 검색
     @GET("/recipe/title/{title}/{page}/10")
-    Call<APIRecipe> getRecipeByTitle(
+    Call<RecipeResponse> getRecipeByTitle(
             @Path("title") String title,
             @Path("page") int page
+    );
+
+    // 레시피 상세정보 보기
+    @GET("/recipe/{recipeId}")
+    Call<RecipeResponse> getRecipeDetails(
+            @Path("recipeId") String recipeId
     );
 }

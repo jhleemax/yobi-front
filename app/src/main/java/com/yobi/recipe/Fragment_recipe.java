@@ -87,8 +87,6 @@ public class Fragment_recipe extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_recipe, container, false);
 
-
-
         recyclerView = v.findViewById(R.id.recyclerView_recipe);
         floatingActionButton = v.findViewById(R.id.floatingActionButton_recipe);
         recipe_searchview = v.findViewById(R.id.searchView_recipe);
@@ -96,13 +94,6 @@ public class Fragment_recipe extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // 어댑터 연결
-        recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
-        if (recyclerView == null) {
-            Log.e("Fragment_recipe", "RecyclerView is null");
-        }
-
-        // 초기화
-        apiRecipesList = new ArrayList<>();
         apiRecipesArrayList = new ArrayList<>();
         apiRecipeRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipesArrayList, getActivity().getApplicationContext());
         recyclerView.setAdapter(apiRecipeRecyclerViewAdapter);
@@ -114,12 +105,12 @@ public class Fragment_recipe extends Fragment {
                 .build();
 
         retrofitAPI = retrofit.create(RetrofitAPI.class);
-        
-        // 리사이클러뷰 가져오기
+
+        // 기본 레시피 목록 로드
         currentPage = 0;  // 새 검색이 시작될 때 페이지를 0으로 초기화
         apiRecipesArrayList.clear();  // 기존 데이터를 비움
         loadRecipes(currentPage);  // 새로운 검색 결과 로드
-        Log.e("lodRecipes", "here is complete");
+        Log.e("lodRecipes", "기본 레시피 목록 로드 완료");
 
         // SearchView 리스너 설정
         recipe_searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -128,8 +119,8 @@ public class Fragment_recipe extends Fragment {
                 currentQuery = query;
                 currentPage = 0;  // 새 검색이 시작될 때 페이지를 0으로 초기화
                 apiRecipesArrayList.clear();  // 기존 데이터를 비움
-                loadRecipes(currentPage);  // 새로운 검색 결과 로드
-                Log.e("lodRecipes", "까지는 됐는데...?");
+                loadRecipesByTitle(currentQuery, currentPage);  // 새로운 검색 결과 로드
+                Log.e("lodRecipes", "검색어 제출됨");
                 return true;
             }
 
@@ -151,6 +142,7 @@ public class Fragment_recipe extends Fragment {
         return v;
     }
 
+    // 기본 레시피 로드
     private void loadRecipes(int page) {
         retrofitAPI.getRecipeAll(page).enqueue(new Callback<RecipeResponse>() {
             @Override
@@ -180,6 +172,33 @@ public class Fragment_recipe extends Fragment {
         });
     }
 
+    // 검색어로 레시피 로드
+    private void loadRecipesByTitle(String title, int page) {
+        retrofitAPI.getRecipeByTitle(title, page).enqueue(new Callback<RecipeResponse>() {
+            @Override
+            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // 서버에서 응답을 정상적으로 받았을 때 데이터를 처리하는 부분
+                    List<APIRecipe> recipes = response.body().getContent();
+                    if (recipes != null) {
+                        apiRecipesArrayList.addAll(recipes);
+                        apiRecipeRecyclerViewAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.e("Retrofit", "Recipe list is empty.");
+                    }
+                } else {
+                    // 서버가 응답했지만 오류 코드가 반환되었을 때
+                    Log.e("Retrofit", "No recipes found. Response code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RecipeResponse> call, Throwable t) {
+                Log.e("Retrofit_onFailure", "Failed to load recipes: " + t.getMessage());
+            }
+        });
+    }
+
     // RecyclerView가 스크롤될 때 추가 로딩을 위한 메서드
     private void setupScrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -189,7 +208,11 @@ public class Fragment_recipe extends Fragment {
 
                 if (!recyclerView.canScrollVertically(1)) { // 최하단에 도달했을 때
                     currentPage++;  // 페이지 증가
-                    loadRecipes(currentPage);  // 다음 페이지의 레시피 로드
+                    if (currentQuery.isEmpty()) {
+                        loadRecipes(currentPage);  // 새로운 페이지의 레시피 로드
+                    } else {
+                        loadRecipesByTitle(currentQuery, currentPage);  // 새로운 페이지의 검색 결과 로드
+                    }
                 }
             }
         });
