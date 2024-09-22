@@ -1,32 +1,22 @@
 package com.yobi.data;
 
-import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class APIRecipe implements Serializable {
-
-    private String title;
     private String userId;
-    private String recipeId;
+    private int recipeId;
+    private String title;
     private String category;
     private String ingredient;
-
-    @SerializedName("recipeThumbnail")
+    private Integer views;
+    private Integer reportCount;
+    private String createDate;
+    private String updateDate;
     private String recipeThumbnail;
-
-    @SerializedName("manuals")
     private List<Manual> manuals;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    // Getters and Setters
     public String getUserId() {
         return userId;
     }
@@ -35,12 +25,20 @@ public class APIRecipe implements Serializable {
         this.userId = userId;
     }
 
-    public String getRecipeId() {
+    public int getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(int recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCategory() {
@@ -59,8 +57,44 @@ public class APIRecipe implements Serializable {
         this.ingredient = ingredient;
     }
 
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
+    }
+
+    public Integer getReportCount() {
+        return reportCount;
+    }
+
+    public void setReportCount(Integer reportCount) {
+        this.reportCount = reportCount;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
     public String getRecipeThumbnail() {
         return recipeThumbnail;
+    }
+
+    public void setRecipeThumbnail(String recipeThumbnail) {
+        this.recipeThumbnail = recipeThumbnail;
     }
 
     public List<Manual> getManuals() {
@@ -71,12 +105,89 @@ public class APIRecipe implements Serializable {
         this.manuals = manuals;
     }
 
-    // 필요할 경우 getRecipeOrderDetails 메소드를 다시 작성
-    public ArrayList<RecipeOrderDetail> getRecipeOrderDetails() {
-        ArrayList<RecipeOrderDetail> recipeOrderDetails = new ArrayList<>();
-        for (Manual manual : manuals) {
-            recipeOrderDetails.add(new RecipeOrderDetail(manual.getImageUrl(), manual.getDescription()));
+    @Override
+    public String toString() {
+        return "APIRecipe{" +
+                "userId='" + userId + '\'' +
+                ", recipeId=" + recipeId +
+                ", title='" + title + '\'' +
+                ", category='" + category + '\'' +
+                ", ingredient='" + ingredient + '\'' +
+                ", views=" + views +
+                ", reportCount=" + reportCount +
+                ", createDate='" + createDate + '\'' +
+                ", updateDate='" + updateDate + '\'' +
+                ", recipeThumbnail='" + recipeThumbnail + '\'' +
+                ", manuals=" + manuals +
+                '}';
+    }
+
+    // Manual class to represent the manuals array
+    public static class Manual implements Serializable {
+        private int manualId;
+        private String contentType;
+        private String contentId;
+        private int stepNumber;
+        private String description;
+        private String image;
+
+        // Getters and Setters
+        public int getManualId() {
+            return manualId;
         }
-        return recipeOrderDetails;
+
+        public void setManualId(int manualId) {
+            this.manualId = manualId;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public int getStepNumber() {
+            return stepNumber;
+        }
+
+        public void setStepNumber(int stepNumber) {
+            this.stepNumber = stepNumber;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public void setImage(String image) {
+            this.image = image;
+        }
+
+        @Override
+        public String toString() {
+            return "Manual{" +
+                    "manualId=" + manualId +
+                    ", stepNumber=" + stepNumber +
+                    ", description='" + description + '\'' +
+                    ", image='" + image + '\'' +
+                    '}';
+        }
     }
 }

@@ -58,4 +58,10 @@ public interface RetrofitAPI {
     Call<APIRecipe> getRecipeDetails(
             @Path("recipeId") int recipeId
     );
+
+    // 유저 정보 가져오기
+    @GET("/user/{userId}")
+    Call<User> getUserInfo(
+            @Path("userId") String userId
+    );
 }
