@@ -1,20 +1,16 @@
 package com.yobi.recipe;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +18,6 @@ import com.bumptech.glide.Glide;
 import com.yobi.R;
 import com.yobi.adapter.RecyclerViewAdapter;
 import com.yobi.data.APIRecipe;
-import com.yobi.data.Manual;
 import com.yobi.data.User;
 import com.yobi.retrofit.RetrofitAPI;
 
@@ -39,12 +34,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Activity_recipe_detail extends AppCompatActivity {
 
     // 컴포넌트
-    TextView textTitle, textViewIngredient, textViewTools, profileName, profileDescription;
+    TextView textTitle, textViewIngredient, profileName, ingredient, profileDescription;
     ImageView mainImage;
-    LinearLayout linearLayout01;
     CircleImageView profileImg;
     AppCompatButton follow, start;
-    RecyclerView ingredient, tools, order;
+    RecyclerView order;
     Button backButton;
 
     // 데이터
@@ -52,8 +46,9 @@ public class Activity_recipe_detail extends AppCompatActivity {
     RetrofitAPI retrofitAPI;
     Retrofit retrofit;
     int recipeId;
-    String defaultProfileImageUrl = "URL_TO_DEFAULT_IMAGE"; // Set your default profile image URL here
+    String defaultProfileImageUrl = "drawable/yobi_profile.png"; // Set your default profile image URL here
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +65,7 @@ public class Activity_recipe_detail extends AppCompatActivity {
         profileDescription = findViewById(R.id.textView_recipe_detail_profile_description);
         profileImg = findViewById(R.id.imageView_recipe_detail_profile);
         textViewIngredient = findViewById(R.id.textView_recipe_detail_ingredient);
-        textViewTools = findViewById(R.id.textView_recipe_detail_tools);
-        ingredient = findViewById(R.id.recyclerView_recipe_detail_ingredient);
-        tools = findViewById(R.id.recyclerView_recipe_detail_tools);
+        ingredient = findViewById(R.id.textView_recipe_detail_ingredient_title);
         order = findViewById(R.id.recyclerView_recipe_detail_order);
         backButton = findViewById(R.id.appCompatButton_recipe_detail_backspace);
         follow = findViewById(R.id.AppCompatButton);
@@ -83,7 +76,7 @@ public class Activity_recipe_detail extends AppCompatActivity {
 
         // Retrofit 초기화
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://your-api-base-url.com")  // 실제 API base URL로 교체해야 합니다.
+                .baseUrl("http://ec2-13-125-91-233.ap-northeast-2.compute.amazonaws.com:8080")  // 실제 API base URL로 교체해야 합니다.
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -125,9 +118,13 @@ public class Activity_recipe_detail extends AppCompatActivity {
                 .load(recipe.getRecipeThumbnail())
                 .into(mainImage);
 
-        // 레시피 재료 설정
-        textViewIngredient.setText(recipe.getIngredient());
-
+        // 레시피 재료 설정 (줄 바꿈 처리)
+        String ingredientText = recipe.getIngredient();
+        if (ingredientText != null) {
+            // ,로 구분된 재료를 줄 바꿈으로 표시
+            ingredientText = ingredientText.replace(", ", "\n");
+            textViewIngredient.setText(ingredientText);
+        }
         // updateDate에서 날짜만 가져와서 설정 (10자리만)
         String updateDate = recipe.getUpdateDate();
         if (updateDate != null && updateDate.length() >= 10) {
@@ -137,7 +134,7 @@ public class Activity_recipe_detail extends AppCompatActivity {
         // 레시피 순서(Manual) 설정
         List<APIRecipe.Manual> manuals = recipe.getManuals();
         if (manuals != null && !manuals.isEmpty()) {
-            RecyclerViewAdapter<Manual> adapter = new RecyclerViewAdapter<>(new ArrayList<>(manuals), this);
+            RecyclerViewAdapter<APIRecipe.Manual> adapter = new RecyclerViewAdapter<>(new ArrayList<>(manuals), this);
             order.setLayoutManager(new LinearLayoutManager(this));
             order.setAdapter(adapter);
         } else {

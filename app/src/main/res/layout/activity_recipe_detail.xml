@@ -68,11 +68,13 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginEnd="8dp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
                 android:id="@+id/imageView_recipe_detail_01"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"/>
+
             <TextView
                 android:id="@+id/textview_recipe_detail_title"
                 android:layout_width="wrap_content"
@@ -82,101 +84,10 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
                 android:text="Title"/>
-            <TextView
-                android:id="@+id/textView_recipe_detail_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:textSize="16sp"
-                android:textColor="@color/more"
-                android:text="this is contents area this is contents area this is contents area this is contents area this is contents area this is contents area this is contents area"/>
 
-            <LinearLayout
-                android:id="@+id/linearLayout_recipe_detail_01"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:padding="8dp">
+            <!-- 삭제된 부분: textView_recipe_detail_description -->
+            <!-- 삭제된 부분: linearLayout_recipe_detail_01 -->
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/imageView_recipe_detail_time"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/recipe_wastetime_src" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="소요시간" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/imageView_recipe_detail_dfficulty"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/recipe_difficulty_src" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="난이도" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/imageView_recipe_detail_amount"
-                        android:layout_width="40dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/recipe_amount_src" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="분량" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -184,6 +95,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="#D0D0D0"/>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout_recipe_detail_02"
                 android:layout_width="match_parent"
@@ -228,39 +140,26 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_margin="8dp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <TextView
-                android:id="@+id/textView_recipe_detail_ingredient"
+                android:id="@+id/textView_recipe_detail_ingredient_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="재료"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginStart="16dp"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_recipe_detail_ingredient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"/>
+
             <TextView
-                android:id="@+id/textView_recipe_detail_tools"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="재료 도구"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_recipe_detail_tools"
+                android:id="@+id/textView_recipe_detail_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"/>
+
+            <!-- 삭제된 부분: textView_recipe_detail_tools -->
+            <!-- 삭제된 부분: recyclerView_recipe_detail_tools -->
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout_recipe_detail_03"
                 android:layout_width="match_parent"
@@ -275,8 +174,7 @@
                     android:gravity="center"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
+                    app:layout_constraintBottom_toBottomOf="parent"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/button_recipe_detail_start"
                     android:layout_width="wrap_content"
@@ -299,6 +197,7 @@
                 android:orientation="vertical"
                 android:minHeight="350dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -306,20 +205,10 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="#D0D0D0"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_marginStart="16dp"
-                android:text="관련 레시피"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_recipe_detail_related"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
-                android:layout_marginHorizontal="16dp"/>
+
+            <!-- 삭제된 부분: 관련 레시피 -->
+            <!-- 삭제된 부분: recyclerView_recipe_detail_related -->
+
         </LinearLayout>
     </ScrollView>
 

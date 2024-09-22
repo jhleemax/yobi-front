@@ -81,10 +81,10 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(orderNum >= apiRecipe.getRecipeOrderDetails().size())
-                    Toast.makeText(getApplicationContext(), "마지막 페이지 입니다", Toast.LENGTH_LONG).show();
-                else
-                    setFrag(++orderNum);
+//                if(orderNum >= apiRecipe.getRecipeOrderDetails().size())
+//                    Toast.makeText(getApplicationContext(), "마지막 페이지 입니다", Toast.LENGTH_LONG).show();
+//                else
+//                    setFrag(++orderNum);
             }
         });
     }

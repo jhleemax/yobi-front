@@ -101,15 +101,15 @@ public class Fragment_recipe_detail_order extends Fragment {
         mic02.setVisibility(View.GONE);
 
         // 바인딩
-        ArrayList<RecipeOrderDetail> recipeOrderDetails = apiRecipe.getRecipeOrderDetails();
-
-        step.setText("Step " + Integer.toString(orderNum) + "/" + Integer.toString(recipeOrderDetails.size()));
-        description.setText(recipeOrderDetails.get(orderNum - 1).getMainDescription());
-
-        Glide.with(getContext())
-             .load(recipeOrderDetails.get(orderNum-1).getImg())
-             .into(imageView);
-
+//        ArrayList<RecipeOrderDetail> recipeOrderDetails = apiRecipe.getRecipeOrderDetails();
+//
+//        step.setText("Step " + Integer.toString(orderNum) + "/" + Integer.toString(recipeOrderDetails.size()));
+//        description.setText(recipeOrderDetails.get(orderNum - 1).getMainDescription());
+//
+//        Glide.with(getContext())
+//             .load(recipeOrderDetails.get(orderNum-1).getImg())
+//             .into(imageView);
+//
         return v;
     }
 }

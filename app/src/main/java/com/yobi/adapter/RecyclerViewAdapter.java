@@ -158,23 +158,40 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         this.context = context;
     }
 
-    @NonNull
+
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = null;
-        if (dataSet.get(0) instanceof APIRecipe)
+
+        // dataSet이 비어있거나 null일 경우 예외 처리
+        if (dataSet == null || dataSet.isEmpty() || dataSet.get(0) == null) {
+            throw new IllegalArgumentException("Dataset is empty or null");
+        }
+
+        Object item = dataSet.get(0);
+
+        // APIRecipe 관련 데이터 타입 처리
+        if (item instanceof APIRecipe) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_itemlist, parent, false);
-        else if (dataSet.get(0) instanceof RecipeOrderDetail)
+        } else if (item instanceof RecipeOrderDetail) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
-        else if (dataSet.get(0) instanceof UserRecipeOrder)
+        } else if (item instanceof UserRecipeOrder) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_order_itemlist, parent, false);
-        else if (dataSet.get(0) instanceof UserRecipeIngredient)
+        } else if (item instanceof UserRecipeIngredient) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_ingredient_itemlist, parent, false);
-        else if (dataSet.get(0) instanceof Image)
+        } else if (item instanceof Image) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_image_itemlist, parent, false);
+        } else if (item instanceof APIRecipe.Manual) {
+            // Manual 타입 추가
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
+        } else {
+            throw new IllegalArgumentException("Unknown data type: " + item.getClass().getName());
+        }
 
         return new ViewHolder(view, listener, textChangeListener, itemSelectedListener, this);
     }
+
+
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
