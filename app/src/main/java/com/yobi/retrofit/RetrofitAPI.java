@@ -55,7 +55,7 @@ public interface RetrofitAPI {
 
     // 레시피 상세정보 보기
     @GET("/recipe/{recipeId}")
-    Call<RecipeResponse> getRecipeDetails(
-            @Path("recipeId") String recipeId
+    Call<APIRecipe> getRecipeDetails(
+            @Path("recipeId") int recipeId
     );
 }

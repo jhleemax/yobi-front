@@ -3,32 +3,42 @@ package com.yobi.recipe;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.yobi.R;
 import com.yobi.adapter.RecyclerViewAdapter;
 import com.yobi.data.APIRecipe;
-import com.yobi.data.RecipeOrderDetail;
+import com.yobi.data.Manual;
+import com.yobi.retrofit.RetrofitAPI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_recipe_detail extends AppCompatActivity {
 
     // 컴포넌트
-    TextView textView01, textViewIngredient, textViewTools;
+    TextView textTitle, textViewIngredient, textViewTools;
     ImageView mainImage;
     TextView description, profileName, profileDescription;
     LinearLayout linearLayout01;
@@ -39,96 +49,92 @@ public class Activity_recipe_detail extends AppCompatActivity {
 
     // 데이터
     APIRecipe apiRecipe;
+    Retrofit retrofit;
+    RetrofitAPI retrofitAPI;
+    int recipeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_recipe_detail);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        // 전달받은 Intent 값(APIRecipe) 가져오기
+        // 전달받은 Intent 값에서 recipeId 가져오기
         Intent intent = getIntent();
-        String separator = intent.getStringExtra("separator");
-        if(separator.equals("api"))
-            apiRecipe = (APIRecipe) intent.getSerializableExtra("clickedRecipe");
+        recipeId = intent.getIntExtra("recipeId", -1); // 기본값 -1, 제대로 전달 안됐을 때 처리
 
         // 컴포넌트 연결
-        textView01 = (TextView) findViewById(R.id.textview_recipe_detail_title);
-        mainImage = (ImageView) findViewById(R.id.imageView_recipe_detail_01);
-        description = (TextView) findViewById(R.id.textView_recipe_detail_description);
-        linearLayout01 = (LinearLayout) findViewById(R.id.linearLayout_recipe_detail_01);
-        profileImg = (CircleImageView) findViewById(R.id.imageView_recipe_detail_profile);
-        profileName = (TextView) findViewById(R.id.textView_recipe_detail_profile_name);
-        profileDescription = (TextView) findViewById(R.id.textView_recipe_detail_profile_description);
-        follow = (AppCompatButton) findViewById(R.id.AppCompatButton);
-        start = (AppCompatButton) findViewById(R.id.button_recipe_detail_start);
+        textTitle = findViewById(R.id.textview_recipe_detail_title);
+        mainImage = findViewById(R.id.imageView_recipe_detail_01);
+        description = findViewById(R.id.textView_recipe_detail_description);
+        linearLayout01 = findViewById(R.id.linearLayout_recipe_detail_01);
+        profileImg = findViewById(R.id.imageView_recipe_detail_profile);
+        profileName = findViewById(R.id.textView_recipe_detail_profile_name);
+        profileDescription = findViewById(R.id.textView_recipe_detail_profile_description);
+        follow = findViewById(R.id.AppCompatButton);
+        start = findViewById(R.id.button_recipe_detail_start);
 
-        textViewIngredient = (TextView) findViewById(R.id.textView_recipe_detail_ingredient);
-        textViewTools = (TextView) findViewById(R.id.textView_recipe_detail_tools);
-        ingredient = (RecyclerView) findViewById(R.id.recyclerView_recipe_detail_ingredient);
-        tools = (RecyclerView) findViewById(R.id.recyclerView_recipe_detail_tools);
-        order = (RecyclerView) findViewById(R.id.recyclerView_recipe_detail_order);
-        backButton = (Button) findViewById(R.id.appCompatButton_recipe_detail_backspace);
+        textViewIngredient = findViewById(R.id.textView_recipe_detail_ingredient);
+        textViewTools = findViewById(R.id.textView_recipe_detail_tools);
+        ingredient = findViewById(R.id.recyclerView_recipe_detail_ingredient);
+        tools = findViewById(R.id.recyclerView_recipe_detail_tools);
+        order = findViewById(R.id.recyclerView_recipe_detail_order);
+        backButton = findViewById(R.id.appCompatButton_recipe_detail_backspace);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        // 뒤로가기 버튼 리스너 설정
+        backButton.setOnClickListener(v -> finish());
+
+        // Retrofit 초기화
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://your-api-base-url.com")  // 실제 API base URL로 교체해야 합니다.
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+        // 서버에 recipeId로 API 요청
+        if (recipeId != -1) {
+            getRecipeDetailsFromServer(recipeId);
+        }
+    }
+
+    private void getRecipeDetailsFromServer(int recipeId) {
+        retrofitAPI.getRecipeDetails(recipeId).enqueue(new Callback<APIRecipe>() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void onResponse(Call<APIRecipe> call, Response<APIRecipe> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // 서버로부터 받아온 데이터를 사용하여 화면을 업데이트합니다.
+                    apiRecipe = response.body();
+                    setupRecipeDetails(apiRecipe);
+                } else {
+                    Log.e("Retrofit", "Failed to get recipe details. Response code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIRecipe> call, Throwable t) {
+                Log.e("Retrofit_onFailure", "Error: " + t.getMessage());
             }
         });
+    }
 
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Activity_recipe_detail.this, Activity_recipe_detail_order.class);
-                if(separator.equals("api"))
-                    intent.putExtra("dataSet", apiRecipe);
-                intent.putExtra("order_num", 1);
-                startActivity(intent);
-            }
-        });
+    private void setupRecipeDetails(APIRecipe recipe) {
+        // 레시피 제목과 설명 설정
+        textTitle.setText(recipe.getTitle());
+        description.setText(recipe.getCategory() + " - " + recipe.getIngredient());
 
-        // 비가시 처리
-        linearLayout01.setVisibility(View.GONE);
-        textViewTools.setVisibility(View.GONE);
-        textViewIngredient.setVisibility(View.GONE);
-        ingredient.setVisibility(View.GONE);
-        tools.setVisibility(View.GONE);
+        // 레시피 이미지 설정
+        Glide.with(this)
+                .load(recipe.getRecipeThumbnail())
+                .into(mainImage);
 
-        if(separator.equals("api")) { // 공공 api 레시피일 경우
-
-            // 프로필 처리
-            profileImg.setBackgroundColor(getColor(R.color.main_theme));
-            Drawable profile = getDrawable(R.drawable.yobi_profile);
-            profileImg.setImageDrawable(profile);
-
-            // 프로필 이름
-            profileName.setText("YOBI Official");
-            profileDescription.setText("YOBI 공식 프로필 입니다");
-
-            // 레시피 제목
-            textView01.setText(apiRecipe.getTitle());
-
-            // 레시피 설명
-//            description.setText(apiRecipe.getRcp_NA_TIP());
-
-            // 레시피 사진
-            Glide.with(getApplicationContext())
-                  .load(apiRecipe.getRecipeThumbnail())
-                  .into(mainImage);
-
-            RecyclerViewAdapter<RecipeOrderDetail> recipeOrderDetailRecyclerViewAdapter = new RecyclerViewAdapter<>(apiRecipe.getRecipeOrderDetails(), getApplicationContext());
-            order.setAdapter(recipeOrderDetailRecyclerViewAdapter);
-
-            order.setHasFixedSize(true);
-
-        } else if(separator.equals("user")) { // 사용자 레시피일 경우
-
+        // 레시피 순서(Manual) 설정
+        List<Manual> manuals = recipe.getManuals();
+        if (manuals != null && !manuals.isEmpty()) {
+            RecyclerViewAdapter<Manual> adapter = new RecyclerViewAdapter<>(new ArrayList<>(manuals), this);
+            order.setLayoutManager(new LinearLayoutManager(this));
+            order.setAdapter(adapter);
+        } else {
+            order.setVisibility(View.GONE);
         }
     }
 }
