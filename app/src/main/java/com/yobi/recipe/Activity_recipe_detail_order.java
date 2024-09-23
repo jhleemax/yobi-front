@@ -1,7 +1,10 @@
 package com.yobi.recipe;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
@@ -10,22 +13,15 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.yobi.R;
 import com.yobi.data.APIRecipe;
 import com.yobi.retrofit.RetrofitAPI;
-
+import java.util.ArrayList;
 import java.util.Locale;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,35 +45,29 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
     // Fragment Manager
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    Fragment_recipe_detail_order fragmentRecipeDetailOrder;
+
+    // TTS 및 STT
+    private TextToSpeech tts;
+    private SpeechRecognizer speechRecognizer;
+    private boolean ttsInitialized = false;
 
     // Retrofit
     RetrofitAPI retrofitAPI;
     Retrofit retrofit;
 
-    // TTS 객체 추가
-    private TextToSpeech tts;
-    private String currentDescription = "";  // 현재 설명을 저장
-    private boolean isTTSInitialized = false; // TTS 초기화 완료 여부 확인
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_recipe_detail_order);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         // TTS 초기화
         tts = new TextToSpeech(this, this);
 
+        // STT 초기화
+        initSTT();
+
         // 전달받은 Intent 값에서 recipeId 가져오기
-        recipeId = getIntent().getIntExtra("recipeId", -1); // 기본값 -1
+        recipeId = getIntent().getIntExtra("recipeId", -1);
 
         // 컴포넌트 연결
         nextButton = findViewById(R.id.appCompatButton_recipe_detail_order_next);
@@ -86,13 +76,6 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
         start = findViewById(R.id.linearLayout_recipe_detail_order_start);
         backButton = findViewById(R.id.button_login_normal_backspace_01);
         frameLayout = findViewById(R.id.frameLayout_recipe_detail_order);
-
-        fragmentRecipeDetailOrder = new Fragment_recipe_detail_order();
-
-        // 비가시 처리
-        amount.setVisibility(View.GONE);
-        difficulty.setVisibility(View.GONE);
-        start.setVisibility(View.GONE);
 
         // Retrofit 초기화
         retrofit = new Retrofit.Builder()
@@ -124,13 +107,111 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
         });
     }
 
+    // TTS 초기화
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.KOREAN);
+            ttsInitialized = true;
+        } else {
+            Toast.makeText(this, "TTS 초기화 실패", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // STT 초기화
+    private void initSTT() {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {}
+
+            @Override
+            public void onBeginningOfSpeech() {}
+
+            @Override
+            public void onRmsChanged(float rmsdB) {}
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {}
+
+            @Override
+            public void onEndOfSpeech() {}
+
+            @Override
+            public void onError(int error) {
+                startListening(); // 에러 시 다시 듣기 시작
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null) {
+                    handleVoiceCommand(matches.get(0)); // 명령어 처리
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {}
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {}
+        });
+
+        startListening();
+    }
+
+    // 음성 인식 시작
+    private void startListening() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
+        speechRecognizer.startListening(intent);
+    }
+
+    // 음성 명령어 처리
+    private void handleVoiceCommand(String command) {
+        command = command.trim().toLowerCase();
+
+        switch (command) {
+            case "다음": case "다음거": case "다음으로": case "다음 거": case "넘겨": case "넘겨줘": case "넘겨 줘": case "다음 단계": case "끝났어": case "스킵":
+                nextButton.performClick();
+                break;
+            case "이전": case "이전으로": case "뒤로": case "뒤로 가줘": case "앞으로": case "앞으로 가줘": case "이전 단계":
+                backButton.performClick();
+                break;
+            case "정지": case "일시정지": case "잠깐": case "잠깐만": case "잠시만": case "기다려": case "기다려 줘": case "멈춰": case "멈춰봐":
+                if (tts != null) {
+                    tts.stop();
+                }
+                break;
+            case "다시": case "다시 읽어": case "다시 읽어 줘": case "뭐라고": case "못들었어": case "다시 말해줘": case "시작":
+                if (apiRecipe != null && orderNum > 0) {
+                    APIRecipe.Manual currentManual = apiRecipe.getManuals().get(orderNum - 1);
+                    speak(currentManual.getDescription());
+                }
+                break;
+            case "그만": case "그만하기": case "그만할래": case "끝내줘": case "꺼줘": case "종료": case "종료해 줘": case "종료해":
+                finish(); // 현재 액티비티 종료
+                break;
+            default:
+                Toast.makeText(this, "알 수 없는 명령입니다.", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    // 텍스트를 TTS로 읽음
+    private void speak(String text) {
+        if (ttsInitialized && tts != null) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
     // 서버에서 recipeId로 API 요청하여 레시피 정보를 가져오기
     private void getRecipeDetailsFromServer(int recipeId) {
         retrofitAPI.getRecipeDetails(recipeId).enqueue(new Callback<APIRecipe>() {
             @Override
             public void onResponse(Call<APIRecipe> call, Response<APIRecipe> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // 서버로부터 받아온 데이터를 사용하여 화면을 업데이트합니다.
                     apiRecipe = response.body();
                     orderNum = 1; // 초기 orderNum 설정
                     setFrag(orderNum); // 처음 fragment 설정
@@ -153,65 +234,24 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
 
-        Fragment_recipe_detail_order fragment = new Fragment_recipe_detail_order();
+        Fragment_recipe_detail_order fragment = Fragment_recipe_detail_order.newInstance(n, apiRecipe);
 
-        // Manual 데이터에서 step에 해당하는 데이터를 추출
-        APIRecipe.Manual currentManual = apiRecipe.getManuals().get(n - 1);  // step 1은 인덱스 0에 해당
-
-        String mainDescription = currentManual.getDescription();
-        String imgURL = currentManual.getImage();
-
-        // Log 추가
-        Log.d("ActivityRecipeDetailOrder", "Step " + n + ": " + mainDescription);
-        Log.d("ActivityRecipeDetailOrder", "Image URL: " + imgURL);
-
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("apiRecipe", apiRecipe);  // 'apiRecipe'를 전달
-        bundle.putInt("orderNum", n);
-        bundle.putString("mainDescription", mainDescription);
-        bundle.putString("imgURL", imgURL);
-        fragment.setArguments(bundle);
-
-        // Description을 저장하고 Fragment를 교체
-        currentDescription = mainDescription;
         fragmentTransaction.replace(R.id.frameLayout_recipe_detail_order, fragment).commit();
 
-        // TTS로 설명을 읽음
-        if (isTTSInitialized) {
-            speak(currentDescription);  // 초기화가 끝났다면 바로 음성을 읽음
-        }
-    }
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            int result = tts.setLanguage(Locale.KOREAN);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this, "TTS: 언어를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
-            } else {
-                isTTSInitialized = true;  // TTS 초기화 완료
-                speak(currentDescription);  // 초기화 후에 설명을 읽음
-            }
-        } else {
-            Toast.makeText(this, "TTS 초기화 실패", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void speak(String text) {
-        if (isTTSInitialized && text != null && !text.isEmpty()) {
-            Log.d("TTS", "Speaking: " + text); // TTS로 말할 내용을 로그로 확인
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        } else {
-            Log.d("TTS", "TTS not initialized or empty text.");
-        }
+        // 명령어에 따른 읽기 동작
+        APIRecipe.Manual currentManual = apiRecipe.getManuals().get(n - 1);
+        speak(currentManual.getDescription());
     }
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (tts != null) {
             tts.stop();
             tts.shutdown();
         }
-        super.onDestroy();
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
     }
 }

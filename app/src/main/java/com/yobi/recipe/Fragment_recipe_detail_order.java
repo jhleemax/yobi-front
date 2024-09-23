@@ -2,7 +2,6 @@ package com.yobi.recipe;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import com.yobi.data.APIRecipe;
 public class Fragment_recipe_detail_order extends Fragment {
 
     // 컴포넌트
-    ImageView imageView, image_ingredient, imageMic;
+    ImageView imageView;
     TextView step, description;
 
     // 전달받을 데이터
@@ -25,6 +24,15 @@ public class Fragment_recipe_detail_order extends Fragment {
 
     public Fragment_recipe_detail_order() {
         // Required empty public constructor
+    }
+
+    public static Fragment_recipe_detail_order newInstance(int orderNum, APIRecipe apiRecipe) {
+        Fragment_recipe_detail_order fragment = new Fragment_recipe_detail_order();
+        Bundle args = new Bundle();
+        args.putInt("orderNum", orderNum);
+        args.putSerializable("apiRecipe", apiRecipe);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
