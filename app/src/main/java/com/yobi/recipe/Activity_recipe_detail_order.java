@@ -6,6 +6,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -62,6 +63,26 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
 
         // TTS 초기화
         tts = new TextToSpeech(this, this);
+
+        // OnUtteranceProgressListener 설정
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+                // TTS 시작 시 작업
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                // TTS가 끝난 후 STT를 자동으로 시작
+                runOnUiThread(() -> startListening());
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+                // 오류 처리
+                Log.e("TTS", "Error occurred during speech.");
+            }
+        });
 
         // STT 초기화
         initSTT();
@@ -169,6 +190,7 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
     }
 
     // 음성 명령어 처리
+    // 음성 명령어 처리
     private void handleVoiceCommand(String command) {
         command = command.trim().toLowerCase();
 
@@ -194,15 +216,20 @@ public class Activity_recipe_detail_order extends AppCompatActivity implements T
                 finish(); // 현재 액티비티 종료
                 break;
             default:
+                // 알 수 없는 명령일 경우 Toast 출력 후 STT 재시작
                 Toast.makeText(this, "알 수 없는 명령입니다.", Toast.LENGTH_SHORT).show();
+                startListening(); // STT 재시작
                 break;
         }
     }
 
+
     // 텍스트를 TTS로 읽음
     private void speak(String text) {
         if (ttsInitialized && tts != null) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            Bundle params = new Bundle();
+            params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "utteranceId");
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "utteranceId");
         }
     }
 
