@@ -46,7 +46,7 @@ public class Activity_recipe_detail extends AppCompatActivity {
     RetrofitAPI retrofitAPI;
     Retrofit retrofit;
     int recipeId;
-    String defaultProfileImageUrl = "drawable/yobi_profile.png"; // Set your default profile image URL here
+    String defaultProfileImageUrl = "drawable/yobi_profile.png";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -69,7 +69,7 @@ public class Activity_recipe_detail extends AppCompatActivity {
         order = findViewById(R.id.recyclerView_recipe_detail_order);
         backButton = findViewById(R.id.appCompatButton_recipe_detail_backspace);
         follow = findViewById(R.id.AppCompatButton);
-        start = findViewById(R.id.button_recipe_detail_start);
+        start = findViewById(R.id.button_recipe_detail_start); // start 버튼
 
         // 뒤로가기 버튼 리스너 설정
         backButton.setOnClickListener(v -> finish());
@@ -86,6 +86,14 @@ public class Activity_recipe_detail extends AppCompatActivity {
         if (recipeId != -1) {
             getRecipeDetailsFromServer(recipeId);
         }
+
+        // start 버튼 클릭 리스너 추가
+        start.setOnClickListener(v -> {
+            // Intent 생성
+            Intent intentToOrder = new Intent(Activity_recipe_detail.this, Activity_recipe_detail_order.class);
+            intentToOrder.putExtra("recipeId", recipeId);  // recipeId 전달
+            startActivity(intentToOrder);  // Activity 전환
+        });
     }
 
     private void getRecipeDetailsFromServer(int recipeId) {
@@ -134,7 +142,8 @@ public class Activity_recipe_detail extends AppCompatActivity {
         // 레시피 순서(Manual) 설정
         List<APIRecipe.Manual> manuals = recipe.getManuals();
         if (manuals != null && !manuals.isEmpty()) {
-            RecyclerViewAdapter<APIRecipe.Manual> adapter = new RecyclerViewAdapter<>(new ArrayList<>(manuals), this);
+            ArrayList<APIRecipe.Manual> manualArrayList = new ArrayList<>(manuals);
+            RecyclerViewAdapter<APIRecipe.Manual> adapter = new RecyclerViewAdapter<>(manualArrayList, this);
             order.setLayoutManager(new LinearLayoutManager(this));
             order.setAdapter(adapter);
         } else {
@@ -143,6 +152,19 @@ public class Activity_recipe_detail extends AppCompatActivity {
     }
 
     private void fetchUserInfo(String userId) {
+        // userId가 null인 경우 기본값 설정
+        if (userId == null || userId.isEmpty()) {
+            profileName.setText("요비");
+
+            // 기본 프로필 이미지 설정 (drawable 리소스 ID 사용)
+            Glide.with(Activity_recipe_detail.this)
+                    .load(R.drawable.yobi_profile_color)  // drawable 리소스 사용
+                    .into(profileImg);
+
+            return;  // 더 이상 서버 요청을 하지 않도록 종료
+        }
+
+        // userId가 null이 아닌 경우에만 서버 요청
         retrofitAPI.getUserInfo(userId).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -156,24 +178,26 @@ public class Activity_recipe_detail extends AppCompatActivity {
                                 .load(user.getUserProfile())
                                 .into(profileImg);
                     } else {
-                        // 기본 프로필 이미지 설정
+                        // 기본 프로필 이미지 설정 (drawable 리소스 ID 사용)
                         Glide.with(Activity_recipe_detail.this)
-                                .load(defaultProfileImageUrl)
+                                .load(R.drawable.yobi_profile_color)  // drawable 리소스 사용
                                 .into(profileImg);
                     }
                 } else {
-                    // 실패 시 기본 프로필 이미지 설정
+                    // 실패 시 기본값 설정
+                    profileName.setText("요비");
                     Glide.with(Activity_recipe_detail.this)
-                            .load(defaultProfileImageUrl)
+                            .load(R.drawable.yobi_profile_color)  // drawable 리소스 사용
                             .into(profileImg);
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // 실패 시 기본 프로필 이미지 설정
+                // 실패 시 기본값 설정
+                profileName.setText("요비");
                 Glide.with(Activity_recipe_detail.this)
-                        .load(defaultProfileImageUrl)
+                        .load(R.drawable.yobi_profile_color)  // drawable 리소스 사용
                         .into(profileImg);
             }
         });

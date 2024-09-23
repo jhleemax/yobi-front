@@ -3,8 +3,6 @@ package com.yobi.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +23,7 @@ import com.yobi.data.UserRecipeOrder;
 import com.yobi.recipe.Activity_recipe_detail;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder> {
 
@@ -62,14 +61,16 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         this.itemSelectedListener = itemSelectedListener;
     }
 
+    // ViewHolder 정의
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // API 레시피 조회용
-        private TextView recipe_title;
-        private TextView recipe_genre;
-        private TextView recipe_ingredient;
+        private TextView recipeTitle;
+        private TextView recipeGenre;
+        private TextView recipeIngredient;
         private ImageView imageView;
 
-        // 다른 사용자 정의 항목들
+        private TextView manualDescription;
+        private ImageView manualImage;
+
         private final RecyclerViewAdapter<T> adapter;
 
         @SuppressLint("WrongViewCast")
@@ -80,75 +81,60 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
             if (adapter.dataSet.isEmpty()) {
                 Log.e("ViewHolder", "dataSet is Empty");
                 return;
-            } else {
-                if (adapter.dataSet.get(0) instanceof APIRecipe) {
-                    // API 레시피에 대한 뷰 초기화
-                    recipe_title = view.findViewById(R.id.textView_recipe_itemlist_01);
-                    recipe_genre = view.findViewById(R.id.textView_recipe_itemlist_02);
-                    recipe_ingredient = view.findViewById(R.id.textView_recipe_itemlist_06);
-                    imageView = view.findViewById(R.id.imageView_recipe_itemlist);
+            }
 
-                    // 아이템 클릭 리스너 설정
-                    view.setOnClickListener(v -> {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            APIRecipe clickedRecipe = (APIRecipe) adapter.dataSet.get(position);
+            // 각 데이터 타입에 따라 다른 뷰 초기화
+            if (adapter.dataSet.get(0) instanceof APIRecipe) {
+                // API 레시피 관련 뷰
+                recipeTitle = view.findViewById(R.id.textView_recipe_itemlist_01);
+                recipeGenre = view.findViewById(R.id.textView_recipe_itemlist_02);
+                recipeIngredient = view.findViewById(R.id.textView_recipe_itemlist_06);
+                imageView = view.findViewById(R.id.imageView_recipe_itemlist);
 
-                            // Intent 생성 및 데이터 전달
-                            Intent intent = new Intent(view.getContext(), Activity_recipe_detail.class);
-                            intent.putExtra("recipeId", clickedRecipe.getRecipeId());  // recipeId 전달
+                // API 레시피 클릭 이벤트 처리
+                view.setOnClickListener(v -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        APIRecipe clickedRecipe = (APIRecipe) adapter.dataSet.get(position);
+                        Intent intent = new Intent(view.getContext(), Activity_recipe_detail.class);
+                        intent.putExtra("recipeId", clickedRecipe.getRecipeId());
+                        view.getContext().startActivity(intent);
+                    }
+                });
 
-                            // Activity 전환
-                            view.getContext().startActivity(intent);
-                        }
-                    });
-
-                } else if (adapter.dataSet.get(0) instanceof RecipeOrderDetail) {
-                    // 레시피 순서 관련 뷰 초기화
-                    // 비슷한 방식으로 설정 가능
-                } else if (adapter.dataSet.get(0) instanceof UserRecipeOrder) {
-                    // 사용자 레시피 순서 관련 뷰 초기화
-                    // 비슷한 방식으로 설정 가능
-                } else if (adapter.dataSet.get(0) instanceof UserRecipeIngredient) {
-                    // 레시피 재료 관련 뷰 초기화
-                    // 비슷한 방식으로 설정 가능
-                } else if (adapter.dataSet.get(0) instanceof Image) {
-                    // 이미지 관련 뷰 초기화
-                    // 비슷한 방식으로 설정 가능
-                }
+            } else if (adapter.dataSet.get(0) instanceof APIRecipe.Manual) {
+                // Manual 관련 뷰
+                manualDescription = view.findViewById(R.id.textView_recipe_detail_order_itemlist_description);
+                manualImage = view.findViewById(R.id.imageView_recipe_detail_order_itemlist);
             }
         }
 
+        // 바인딩 메서드
         public void onBind(T item, int position) {
             if (item instanceof APIRecipe) {
                 APIRecipe recipe = (APIRecipe) item;
 
-                // 레시피 이름 설정
-                recipe_title.setText(recipe.getTitle());
+                recipeTitle.setText(recipe.getTitle());
+                recipeGenre.setText(recipe.getCategory());
+                recipeIngredient.setText(recipe.getIngredient());
 
-                // 레시피 카테고리 설정
-                recipe_genre.setText(recipe.getCategory());
-
-                // 재료 설정
-                recipe_ingredient.setText(recipe.getIngredient());
-
-                // 이미지 로드 (Glide 사용)
+                // 이미지 로드
                 if (recipe.getRecipeThumbnail() != null && !recipe.getRecipeThumbnail().isEmpty()) {
                     Glide.with(context)
                             .load(recipe.getRecipeThumbnail())
                             .into(imageView);
                 }
 
-            } else if (item instanceof RecipeOrderDetail) {
-                // 레시피 순서 바인딩
-                RecipeOrderDetail orderDetail = (RecipeOrderDetail) item;
-                // 비슷한 방식으로 바인딩
-            } else if (item instanceof UserRecipeOrder) {
-                // 사용자 레시피 순서 바인딩
-                // 비슷한 방식으로 바인딩
-            } else if (item instanceof UserRecipeIngredient) {
-                // 사용자 레시피 재료 바인딩
-                // 비슷한 방식으로 바인딩
+            } else if (item instanceof APIRecipe.Manual) {
+                APIRecipe.Manual manual = (APIRecipe.Manual) item;
+
+                // Manual 설명 및 이미지 설정
+                manualDescription.setText(manual.getDescription());
+                if (manual.getImage() != null && !manual.getImage().isEmpty()) {
+                    Glide.with(context)
+                            .load(manual.getImage())
+                            .into(manualImage);
+                }
             }
         }
     }
@@ -158,40 +144,19 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         this.context = context;
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = null;
 
-        // dataSet이 비어있거나 null일 경우 예외 처리
-        if (dataSet == null || dataSet.isEmpty() || dataSet.get(0) == null) {
-            throw new IllegalArgumentException("Dataset is empty or null");
-        }
-
-        Object item = dataSet.get(0);
-
-        // APIRecipe 관련 데이터 타입 처리
-        if (item instanceof APIRecipe) {
+        // 데이터 타입에 따른 뷰 선택
+        if (dataSet.get(0) instanceof APIRecipe) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_itemlist, parent, false);
-        } else if (item instanceof RecipeOrderDetail) {
+        } else if (dataSet.get(0) instanceof APIRecipe.Manual) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
-        } else if (item instanceof UserRecipeOrder) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_order_itemlist, parent, false);
-        } else if (item instanceof UserRecipeIngredient) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_ingredient_itemlist, parent, false);
-        } else if (item instanceof Image) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_write_image_itemlist, parent, false);
-        } else if (item instanceof APIRecipe.Manual) {
-            // Manual 타입 추가
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_order_itemlist, parent, false);
-        } else {
-            throw new IllegalArgumentException("Unknown data type: " + item.getClass().getName());
         }
 
         return new ViewHolder(view, listener, textChangeListener, itemSelectedListener, this);
     }
-
-
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {

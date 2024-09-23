@@ -1,6 +1,8 @@
 package com.yobi.recipe;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -19,12 +21,20 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.yobi.R;
 import com.yobi.data.APIRecipe;
+import com.yobi.retrofit.RetrofitAPI;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_recipe_detail_order extends AppCompatActivity {
 
     // 데이터
     APIRecipe apiRecipe;
     int orderNum;
+    int recipeId;
 
     // 컴포넌트
     Spinner difficulty, amount;
@@ -38,67 +48,120 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
     FragmentTransaction fragmentTransaction;
     Fragment_recipe_detail_order fragmentRecipeDetailOrder;
 
+    // Retrofit
+    RetrofitAPI retrofitAPI;
+    Retrofit retrofit;
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_recipe_detail_order);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        apiRecipe = (APIRecipe) getIntent().getSerializableExtra("dataSet");
-        orderNum = getIntent().getIntExtra("order_num", 1);
+        // 전달받은 Intent 값에서 recipeId 가져오기
+        recipeId = getIntent().getIntExtra("recipeId", -1); // 기본값 -1
 
-        nextButton = (AppCompatButton) findViewById(R.id.appCompatButton_recipe_detail_order_next);
-        amount = (Spinner) findViewById(R.id.spinner_recipe_detail_order_amount);
-        difficulty = (Spinner) findViewById(R.id.spinner_recipe_detail_order_difficulty);
-        start = (LinearLayout) findViewById(R.id.linearLayout_recipe_detail_order_start);
-        backButton = (Button) findViewById(R.id.button_login_normal_backspace_01);
-        frameLayout = (FrameLayout) findViewById(R.id.frameLayout_recipe_detail_order);
+        // 컴포넌트 연결
+        nextButton = findViewById(R.id.appCompatButton_recipe_detail_order_next);
+        amount = findViewById(R.id.spinner_recipe_detail_order_amount);
+        difficulty = findViewById(R.id.spinner_recipe_detail_order_difficulty);
+        start = findViewById(R.id.linearLayout_recipe_detail_order_start);
+        backButton = findViewById(R.id.button_login_normal_backspace_01);
+        frameLayout = findViewById(R.id.frameLayout_recipe_detail_order);
 
         fragmentRecipeDetailOrder = new Fragment_recipe_detail_order();
-        setFrag(orderNum);
 
         // 비가시 처리
         amount.setVisibility(View.GONE);
         difficulty.setVisibility(View.GONE);
         start.setVisibility(View.GONE);
 
+        // Retrofit 초기화
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://ec2-13-125-91-233.ap-northeast-2.compute.amazonaws.com:8080")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+        // 서버에서 recipeId로 API 요청하여 레시피 정보를 가져오기
+        if (recipeId != -1) {
+            getRecipeDetailsFromServer(recipeId);
+        }
+
         // 이벤트
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(orderNum == 1)
-                    finish();
-                else
-                    setFrag(--orderNum);
-            }
+        backButton.setOnClickListener(v -> {
+            if (orderNum == 1)
+                finish();
+            else
+                setFrag(--orderNum);
         });
 
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if(orderNum >= apiRecipe.getRecipeOrderDetails().size())
-//                    Toast.makeText(getApplicationContext(), "마지막 페이지 입니다", Toast.LENGTH_LONG).show();
-//                else
-//                    setFrag(++orderNum);
+        nextButton.setOnClickListener(v -> {
+            if (apiRecipe != null && orderNum < apiRecipe.getManuals().size()) {
+                setFrag(++orderNum);
+            } else {
+                Toast.makeText(this, "마지막 단계입니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    // 서버에서 recipeId로 API 요청하여 레시피 정보를 가져오기
+    private void getRecipeDetailsFromServer(int recipeId) {
+        retrofitAPI.getRecipeDetails(recipeId).enqueue(new Callback<APIRecipe>() {
+            @Override
+            public void onResponse(Call<APIRecipe> call, Response<APIRecipe> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // 서버로부터 받아온 데이터를 사용하여 화면을 업데이트합니다.
+                    apiRecipe = response.body();
+                    orderNum = 1; // 초기 orderNum 설정
+                    setFrag(orderNum); // 처음 fragment 설정
+                } else {
+                    Log.e("RecipeDetailOrder", "Failed to load recipe. Response code: " + response.code());
+                    Toast.makeText(Activity_recipe_detail_order.this, "레시피 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIRecipe> call, Throwable t) {
+                Log.e("RecipeDetailOrder", "Error: " + t.getMessage());
+                Toast.makeText(Activity_recipe_detail_order.this, "서버 요청에 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Fragment 설정
     private void setFrag(int n) {
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
 
         Fragment_recipe_detail_order fragment = new Fragment_recipe_detail_order();
+
+        // Manual 데이터에서 step에 해당하는 데이터를 추출
+        APIRecipe.Manual currentManual = apiRecipe.getManuals().get(n - 1);  // step 1은 인덱스 0에 해당
+
+        String mainDescription = currentManual.getDescription();
+        String imgURL = currentManual.getImage();
+
+        // Log 추가
+        Log.d("ActivityRecipeDetailOrder", "Step " + n + ": " + mainDescription);
+        Log.d("ActivityRecipeDetailOrder", "Image URL: " + imgURL);
+
         Bundle bundle = new Bundle();
         bundle.putSerializable("dataSet", apiRecipe);
         bundle.putInt("orderNum", n);
+        bundle.putString("mainDescription", mainDescription);
+        bundle.putString("imgURL", imgURL);
         fragment.setArguments(bundle);
 
         fragmentTransaction.replace(R.id.frameLayout_recipe_detail_order, fragment).commit();
     }
+
 }
