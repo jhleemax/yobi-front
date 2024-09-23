@@ -2,6 +2,7 @@ package com.yobi.recipe;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,13 +24,15 @@ import com.yobi.R;
 import com.yobi.data.APIRecipe;
 import com.yobi.retrofit.RetrofitAPI;
 
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Activity_recipe_detail_order extends AppCompatActivity {
+public class Activity_recipe_detail_order extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     // 데이터
     APIRecipe apiRecipe;
@@ -52,6 +55,11 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
     RetrofitAPI retrofitAPI;
     Retrofit retrofit;
 
+    // TTS 객체 추가
+    private TextToSpeech tts;
+    private String currentDescription = "";  // 현재 설명을 저장
+    private boolean isTTSInitialized = false; // TTS 초기화 완료 여부 확인
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +72,9 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // TTS 초기화
+        tts = new TextToSpeech(this, this);
 
         // 전달받은 Intent 값에서 recipeId 가져오기
         recipeId = getIntent().getIntExtra("recipeId", -1); // 기본값 -1
@@ -154,15 +165,53 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
         Log.d("ActivityRecipeDetailOrder", "Step " + n + ": " + mainDescription);
         Log.d("ActivityRecipeDetailOrder", "Image URL: " + imgURL);
 
-        // Fragment로 데이터 전달
         Bundle bundle = new Bundle();
-        bundle.putSerializable("apiRecipe", apiRecipe);  // 키 이름 수정
+        bundle.putSerializable("apiRecipe", apiRecipe);  // 'apiRecipe'를 전달
         bundle.putInt("orderNum", n);
         bundle.putString("mainDescription", mainDescription);
         bundle.putString("imgURL", imgURL);
         fragment.setArguments(bundle);
 
+        // Description을 저장하고 Fragment를 교체
+        currentDescription = mainDescription;
         fragmentTransaction.replace(R.id.frameLayout_recipe_detail_order, fragment).commit();
+
+        // TTS로 설명을 읽음
+        if (isTTSInitialized) {
+            speak(currentDescription);  // 초기화가 끝났다면 바로 음성을 읽음
+        }
     }
 
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.KOREAN);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this, "TTS: 언어를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                isTTSInitialized = true;  // TTS 초기화 완료
+                speak(currentDescription);  // 초기화 후에 설명을 읽음
+            }
+        } else {
+            Toast.makeText(this, "TTS 초기화 실패", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void speak(String text) {
+        if (isTTSInitialized && text != null && !text.isEmpty()) {
+            Log.d("TTS", "Speaking: " + text); // TTS로 말할 내용을 로그로 확인
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        } else {
+            Log.d("TTS", "TTS not initialized or empty text.");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
 }

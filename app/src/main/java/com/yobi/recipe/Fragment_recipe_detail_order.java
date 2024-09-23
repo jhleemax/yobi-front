@@ -17,7 +17,7 @@ public class Fragment_recipe_detail_order extends Fragment {
 
     // 컴포넌트
     ImageView imageView, image_ingredient, imageMic;
-    TextView step, description, description_sub, description_ingredient, mic01, mic02;
+    TextView step, description;
 
     // 전달받을 데이터
     private int orderNum;
@@ -25,15 +25,6 @@ public class Fragment_recipe_detail_order extends Fragment {
 
     public Fragment_recipe_detail_order() {
         // Required empty public constructor
-    }
-
-    public static Fragment_recipe_detail_order newInstance(int orderNum, APIRecipe apiRecipe) {
-        Fragment_recipe_detail_order fragment = new Fragment_recipe_detail_order();
-        Bundle args = new Bundle();
-        args.putInt("orderNum", orderNum);
-        args.putSerializable("apiRecipe", apiRecipe);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
