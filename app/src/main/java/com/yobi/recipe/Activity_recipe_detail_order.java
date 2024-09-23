@@ -154,8 +154,9 @@ public class Activity_recipe_detail_order extends AppCompatActivity {
         Log.d("ActivityRecipeDetailOrder", "Step " + n + ": " + mainDescription);
         Log.d("ActivityRecipeDetailOrder", "Image URL: " + imgURL);
 
+        // Fragment로 데이터 전달
         Bundle bundle = new Bundle();
-        bundle.putSerializable("dataSet", apiRecipe);
+        bundle.putSerializable("apiRecipe", apiRecipe);  // 키 이름 수정
         bundle.putInt("orderNum", n);
         bundle.putString("mainDescription", mainDescription);
         bundle.putString("imgURL", imgURL);
